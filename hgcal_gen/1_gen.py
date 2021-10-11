@@ -21,9 +21,22 @@ process.load('Configuration.StandardSequences.SimIdeal_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
-import FWCore.ParameterSet.VarParsing as VarParsing
-options = VarParsing.VarParsing("analysis")
-options.parseArguments()
+
+
+with open("conf.yaml", "r") as f:
+    settingsD = yaml.load(f,Loader=yaml.SafeLoader)
+
+for key in settingsD:
+    print("setting "+str(key)+" <- "+str(settingsD[key]))
+    if type(settingsD[key]) is int:
+        settingsD[key] = cms.int32(settingsD[key])
+    if type(settingsD[key]) is float:
+        settingsD[key] = cms.double(settingsD[key])
+    if type(settingsD[key]) is bool:
+        settingsD[key] = cms.bool(settingsD[key])
+    if type(settingsD[key]) is str:
+        settingsD[key] = cms.string(settingsD[key])
+print(settingsD)
 
 
 process.maxEvents = cms.untracked.PSet(
@@ -92,11 +105,9 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T15', ''
 
 process.generator = cms.EDProducer("FlatRandomEGunProducer",
     PGunParameters = cms.PSet(
-        PartID = cms.vint32(22),
+        PartID = cms.vint32(11),
         MinEta = cms.double(2.00),
         MaxEta = cms.double(2.02),
-        MinPhi = cms.double(1.570),
-        MaxPhi = cms.double(1.572),
         MinE = cms.double(49.99),
         MaxE = cms.double(50.01)
     ),

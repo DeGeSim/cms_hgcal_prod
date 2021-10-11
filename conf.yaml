@@ -1,0 +1,11 @@
+path:
+  step1_output: 'wd/step1'
+  step2_output: 'wd/step2'
+  step3_output: 'wd/step3'
+gen_particle_pdg_id: 11
+maxEvents: 2
+PartID: 11
+MinEta: 1.6
+MaxEta: 3.0
+MinE: 10
+MaxE: 100

@@ -2,20 +2,13 @@
 set -xe
 Nevents=2
 NCORES=6
-cd hgcal_gen/
-cmsRun --numThreads $NCORES \
-    step1_SingleElectronPt15Eta1p7_2p7_cfi_GEN_SIM.py \
-    maxEvents=$Nevents 
 
-cmsRun --numThreads $NCORES\
-    step2_DIGI_L1TrackTrigger_L1_DIGI2RAW_HLT.py \
-    maxEvents=$Nevents 
+cmsRun --numThreads $NCORES hgcal_gen/1_gen.py
 
-cmsRun --numThreads $NCORES \
-    step3_RAW2DIGI_L1Reco_RECO_RECOSIM_PAT_VALIDATION_DQM.py \
-    maxEvents=$Nevents 
+cmsRun --numThreads $NCORES hgcal_gen/2_digi.py
 
-cd ..
+cmsRun --numThreads $NCORES hgcal_gen/3_reco.py
+
 cmsRun --numThreads $NCORES\
     EDAnalyzers/TreeMaker/python/ConfFile_cfg.py \
     inputFiles=step1.root \
