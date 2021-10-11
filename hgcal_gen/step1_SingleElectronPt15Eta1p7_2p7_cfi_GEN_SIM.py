@@ -1,13 +1,10 @@
-# Auto generated configuration file
-# using: 
-# Revision: 1.19 
-# Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: SingleElectronPt15Eta1p7_2p7_cfi --conditions auto:phase2_realistic_T15 -n 10 --era Phase2C9 --eventcontent FEVTDEBUG --relval 9000,100 -s GEN,SIM --datatier GEN-SIM --beamspot HLLHC --geometry Extended2026D49 --no_exec --fileout file:step1.root
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Phase2C9_cff import Phase2C9
 
 process = cms.Process('SIM',Phase2C9)
+
+
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -15,19 +12,22 @@ process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.Geometry.GeometryExtended2026D49Reco_cff')
-process.load('Configuration.Geometry.GeometryExtended2026D49_cff')
+process.load('Geometry.HGCalCommonData.testGeometryV14_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.Generator_cff')
-process.load('IOMC.EventVertexGenerators.VtxSmearedHLLHC_cfi')
+process.load('IOMC.EventVertexGenerators.VtxSmearedHLLHC14TeV_cfi')
 process.load('GeneratorInterface.Core.genFilterSummary_cff')
 process.load('Configuration.StandardSequences.SimIdeal_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
+import FWCore.ParameterSet.VarParsing as VarParsing
+options = VarParsing.VarParsing("analysis")
+options.parseArguments()
+
+
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(5),
-    output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
+    input = cms.untracked.int32(options.maxEvents),
 )
 
 # Input source
@@ -40,10 +40,11 @@ process.options = cms.untracked.PSet(
     SkipEvent = cms.untracked.vstring(),
     allowUnscheduled = cms.obsolete.untracked.bool,
     canDeleteEarly = cms.untracked.vstring(),
+#    deleteNonConsumedUnscheduledModules = cms.untracked.bool(True),
     emptyRunLumiMode = cms.obsolete.untracked.string,
     eventSetup = cms.untracked.PSet(
         forceNumberOfConcurrentIOVs = cms.untracked.PSet(
-
+            allowAnyLabel_=cms.required.untracked.uint32
         ),
         numberOfConcurrentIOVs = cms.untracked.uint32(1)
     ),
@@ -62,7 +63,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('SingleElectronPt15Eta1p7_2p7_cfi nevts:10'),
+    annotation = cms.untracked.string('single gamma E 50'),
     name = cms.untracked.string('Applications'),
     version = cms.untracked.string('$Revision: 1.19 $')
 )
@@ -89,24 +90,26 @@ process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T15', '')
 
-process.generator = cms.EDProducer("FlatRandomPtGunProducer",
-    AddAntiParticle = cms.bool(True),
+process.generator = cms.EDProducer("FlatRandomEGunProducer",
     PGunParameters = cms.PSet(
-        MaxEta = cms.double(2.03),
-        MaxPhi = cms.double(-1.56),
-        MaxPt = cms.double(15.01),
-        MinEta = cms.double(2.01),
-        MinPhi = cms.double(-1.58),
-        MinPt = cms.double(14.99),
-        PartID = cms.vint32(11)
+        PartID = cms.vint32(22),
+        MinEta = cms.double(2.00),
+        MaxEta = cms.double(2.02),
+        MinPhi = cms.double(1.570),
+        MaxPhi = cms.double(1.572),
+        MinE = cms.double(49.99),
+        MaxE = cms.double(50.01)
     ),
-    Verbosity = cms.untracked.int32(0),
-    firstRun = cms.untracked.uint32(1),
-    psethack = cms.string('single electron pt 15')
+    Verbosity = cms.untracked.int32(0), ## set to 1 (or greater)  for printouts
+    psethack = cms.string('single gamma E 50'),
+    AddAntiParticle = cms.bool(True),
+    firstRun = cms.untracked.uint32(1)
 )
 
 from SimCalorimetry.HGCalSimProducers.hgcalDigitizer_cfi import *
 process = HGCal_disableNoise(process)
+
+process.ProductionFilterSequence = cms.Sequence(process.generator)
 
 
 # Path and EndPath definitions
@@ -122,7 +125,8 @@ from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 # filter all path with the production filter sequence
 for path in process.paths:
-	getattr(process,path).insert(0, process.generator)
+	getattr(process,path).insert(0, process.ProductionFilterSequence)
+
 
 
 # Customisation from command line
