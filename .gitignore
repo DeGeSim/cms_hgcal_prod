@@ -1,0 +1,12 @@
+__init__.py
+*.pyc
+.*.swp
+.#*
+#*#
+*~
+*.root
+.env
+.vscode/
+workspace.code-workspace
+
+unclear_use/
