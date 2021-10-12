@@ -6,6 +6,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Phase2C9_cff import Phase2C9
+from settingsparse import settingsD, cliargs
 
 process = cms.Process("RECO", Phase2C9)
 
@@ -35,7 +36,12 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source(
     "PoolSource",
-    fileNames=cms.untracked.vstring("file:step2.root"),
+    fileNames=cms.untracked.vstring(
+        "file:{}/{}.root".format(
+            settingsD["path"]["step2_output"].value(),
+            cliargs.fileid,
+        )
+    ),
     secondaryFileNames=cms.untracked.vstring(),
 )
 
@@ -72,14 +78,18 @@ process.configurationMetadata = cms.untracked.PSet(
 )
 
 # Output definition
-
 process.FEVTDEBUGHLToutput = cms.OutputModule(
     "PoolOutputModule",
     dataset=cms.untracked.PSet(
         dataTier=cms.untracked.string("GEN-SIM-RECO"),
         filterName=cms.untracked.string(""),
     ),
-    fileName=cms.untracked.string("file:step3.root"),
+    fileName=cms.untracked.string(
+        "file:{}/{}.root".format(
+            settingsD["path"]["step3_output"].value(),
+            cliargs.fileid,
+        )
+    ),
     outputCommands=process.FEVTDEBUGHLTEventContent.outputCommands,
     splitLevel=cms.untracked.int32(0),
 )

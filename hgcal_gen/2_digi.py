@@ -4,8 +4,9 @@
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v
 # with command line options: step2 --conditions auto:phase2_realistic_T15 -s DIGI:pdigi_valid,L1TrackTrigger,L1,DIGI2RAW,HLT:@fake2 --datatier GEN-SIM-DIGI-RAW -n 10 --geometry Extended2026D49 --era Phase2C9 --eventcontent FEVTDEBUGHLT --no_exec --filein file:step1.root --fileout file:step2.root
 import FWCore.ParameterSet.Config as cms
-
 from Configuration.Eras.Era_Phase2C9_cff import Phase2C9
+from settingsparse import settingsD, cliargs
+
 
 process = cms.Process("HLT", Phase2C9)
 
@@ -33,7 +34,12 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source(
     "PoolSource",
     dropDescendantsOfDroppedBranches=cms.untracked.bool(False),
-    fileNames=cms.untracked.vstring("file:step1.root"),
+    fileNames=cms.untracked.vstring(
+        "file:{}/{}.root".format(
+            settingsD["path"]["step1_output"].value(),
+            cliargs.fileid,
+        )
+    ),
     inputCommands=cms.untracked.vstring(
         "keep *",
         "drop *_genParticles_*_*",
@@ -96,7 +102,12 @@ process.FEVTDEBUGHLToutput = cms.OutputModule(
         dataTier=cms.untracked.string("GEN-SIM-DIGI-RAW"),
         filterName=cms.untracked.string(""),
     ),
-    fileName=cms.untracked.string("file:step2.root"),
+    fileName=cms.untracked.string(
+        "file:{}/{}.root".format(
+            settingsD["path"]["step2_output"].value(),
+            cliargs.fileid,
+        )
+    ),
     outputCommands=process.FEVTDEBUGHLTEventContent.outputCommands,
     splitLevel=cms.untracked.int32(0),
 )
