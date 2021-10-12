@@ -3,6 +3,7 @@
 # Revision: 1.19
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v
 # with command line options: step3 --conditions auto:phase2_realistic_T15 -n 10 --era Phase2C9 --eventcontent FEVTDEBUGHLT,MINIAODSIM,DQM --runUnscheduled -s RAW2DIGI,L1Reco,RECO,RECOSIM,PAT,VALIDATION:@phase2Validation+@miniAODValidation,DQM:@phase2+@miniAODDQM --datatier GEN-SIM-RECO,MINIAODSIM,DQMIO --geometry Extended2026D49 --no_exec --filein file:step2.root --fileout file:step3.root
+import os
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Phase2C9_cff import Phase2C9
@@ -78,6 +79,9 @@ process.configurationMetadata = cms.untracked.PSet(
 )
 
 # Output definition
+# Output definition
+os.system("mkdir -p %s" %(settingsD["path"]["step3_output"].value()))
+
 process.FEVTDEBUGHLToutput = cms.OutputModule(
     "PoolOutputModule",
     dataset=cms.untracked.PSet(

@@ -1,11 +1,11 @@
 Gun:
   AddAntiParticle: false
-  MaxE: 500
-  MaxEta: 3
+  MaxE: 500.
+  MaxEta: 3.
   MaxPhi: 6.2831853
-  MinE: 10
+  MinE: 10.
   MinEta: 1.6
-  MinPhi: 0
+  MinPhi: 0.
   PartID: 11
 debugFile: 0
 genEleFilter: 0
