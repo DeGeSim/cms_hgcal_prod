@@ -1,20 +1,22 @@
-path:
-  step1_output: 'wd/step1'
-  step2_output: 'wd/step2'
-  step3_output: 'wd/step3'
-gen_particle_pdg_id: 11
-maxEvents: 2
 Gun:
-  PartID: 11
-  MinEta: 1.6
-  MaxEta: 3.0
+  AddAntiParticle: false
+  MaxE: 500
+  MaxEta: 3
+  MaxPhi: 6.2831853
   MinE: 10
-  MaxE: 100
-  AddAntiParticle: False
+  MinEta: 1.6
+  MinPhi: 0
+  PartID: 11
+debugFile: 0
 genEleFilter: 0
 genPartonFilter: 0
+gen_particle_pdg_id: 11
 isGunSample: 1
+maxEvents: 2
 onRaw: 0
-storeSimHit: 1
+path:
+  step1_output: wd/step1
+  step2_output: wd/step2
+  step3_output: wd/step3
 storeRecHit: 1
-debugFile: 0
+storeSimHit: 1

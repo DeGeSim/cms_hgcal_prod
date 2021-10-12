@@ -1,8 +1,9 @@
+from pprint import pprint
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Phase2C9_cff import Phase2C9
+from settingsparse import settingsD, cliargs
 
-import yaml
 
 process = cms.Process("SIM", Phase2C9)
 
@@ -22,30 +23,8 @@ process.load("Configuration.StandardSequences.SimIdeal_cff")
 process.load("Configuration.StandardSequences.EndOfProcess_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 
-import FWCore.ParameterSet.VarParsing as VarParsing
-cliargs = VarParsing.VarParsing("analysis")
-cliargs.parseArguments()
-
-
-
-with open("conf.yaml", "r") as f:
-    settingsD = yaml.load(f, Loader=yaml.SafeLoader)
-
-for key in settingsD:
-    print("setting " + str(key) + " <- " + str(settingsD[key]))
-    if type(settingsD[key]) is int:
-        settingsD[key] = cms.int32(settingsD[key])
-    if type(settingsD[key]) is float:
-        settingsD[key] = cms.double(settingsD[key])
-    if type(settingsD[key]) is bool:
-        settingsD[key] = cms.bool(settingsD[key])
-    if type(settingsD[key]) is str:
-        settingsD[key] = cms.string(settingsD[key])
-print(settingsD)
-
-
 process.maxEvents = cms.untracked.PSet(
-    input=cms.untracked.int32(settingsD["maxEvents"]),
+    input=cms.untracked.int32(settingsD["maxEvents"].value()),
 )
 
 # Input source
@@ -96,7 +75,7 @@ process.FEVTDEBUGoutput = cms.OutputModule(
     ),
     fileName=cms.untracked.string(
         "file:{}/{}.root".format(
-            settingsD["path"]["step1_output"],
+            settingsD["path"]["step1_output"].value(),
             cliargs.fileid,
         )
     ),
@@ -115,11 +94,13 @@ process.GlobalTag = GlobalTag(process.GlobalTag, "auto:phase2_realistic_T15", ""
 process.generator = cms.EDProducer(
     "FlatRandomEGunProducer",
     PGunParameters=cms.PSet(
-        PartID=cms.vint32(settingsD["Gun"]["PartID"]),
+        PartID=cms.vint32(settingsD["Gun"]["PartID"].value()),
         MinEta=settingsD["Gun"]["MinEta"],
         MaxEta=settingsD["Gun"]["MaxEta"],
         MinE=settingsD["Gun"]["MinE"],
         MaxE=settingsD["Gun"]["MaxE"],
+        MinPhi=settingsD["Gun"]["MinPhi"],
+        MaxPhi=settingsD["Gun"]["MaxPhi"],
     ),
     Verbosity=cms.untracked.int32(0),  ## set to 1 (or greater)  for printouts
     psethack=cms.string("single gamma E 50"),  # Todo
@@ -164,3 +145,4 @@ from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEar
 
 process = customiseEarlyDelete(process)
 # End adding early deletion
+print("Step 1 finished")

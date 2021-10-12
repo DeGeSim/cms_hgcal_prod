@@ -10,3 +10,5 @@ __init__.py
 workspace.code-workspace
 
 unclear_use/
+tmp/
+
