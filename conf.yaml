@@ -4,8 +4,17 @@ path:
   step3_output: 'wd/step3'
 gen_particle_pdg_id: 11
 maxEvents: 2
-PartID: 11
-MinEta: 1.6
-MaxEta: 3.0
-MinE: 10
-MaxE: 100
+Gun:
+  PartID: 11
+  MinEta: 1.6
+  MaxEta: 3.0
+  MinE: 10
+  MaxE: 100
+  AddAntiParticle: False
+genEleFilter: 0
+genPartonFilter: 0
+isGunSample: 1
+onRaw: 0
+storeSimHit: 1
+storeRecHit: 1
+debugFile: 0

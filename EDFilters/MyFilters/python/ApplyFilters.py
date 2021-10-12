@@ -4,6 +4,7 @@
 import FWCore.ParameterSet.Config as cms
 from .GenParticleFilter_cfi import *
 
+
 def apply_filters(process, options):
     # Gen-ele filter
     process.GenParticleFilter_ele = GenParticleFilter.clone()

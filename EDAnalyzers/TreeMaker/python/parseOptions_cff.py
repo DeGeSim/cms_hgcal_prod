@@ -21,7 +21,7 @@ options.register(
 
 options.register(
     "outFileNumber",
-    -1,  
+    -1,
     VarParsing.VarParsing.multiplicity.singleton,  # singleton or list
     VarParsing.VarParsing.varType.int,  # string, int, or float
     "File number (will be added to the filename if >= 0)",  # Description

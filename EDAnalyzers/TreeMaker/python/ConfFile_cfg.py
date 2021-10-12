@@ -20,6 +20,7 @@ process.load("Configuration.StandardSequences.EndOfProcess_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 
 from Configuration.AlCa.GlobalTag import GlobalTag
+
 process.GlobalTag = GlobalTag(process.GlobalTag, "auto:phase2_realistic_T15", "")
 
 process.load("Configuration.Geometry.GeometryExtended2026D49Reco_cff")
@@ -30,17 +31,14 @@ process.load("Configuration.Geometry.GeometryExtended2026D49_cff")
 from EDAnalyzers.TreeMaker.parseOptions_cff import options
 
 
-
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.threshold = 'INFO'
+process.MessageLogger.cerr.threshold = "INFO"
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.MessageLogger.categories.append('Demo')
-process.MessageLogger.cerr.INFO = cms.untracked.PSet(
-    limit = cms.untracked.int32(-1)
-)
+process.MessageLogger.categories.append("Demo")
+process.MessageLogger.cerr.INFO = cms.untracked.PSet(limit=cms.untracked.int32(-1))
 
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(options.maxEvents))
+process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(True))
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(options.maxEvents))
 
 ############################## File Paths ###################################
 #### Check if inputfile is given, otherwise read filenames from the sourcefile
