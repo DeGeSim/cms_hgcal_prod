@@ -1,3 +1,4 @@
+import os
 from pprint import pprint
 import FWCore.ParameterSet.Config as cms
 
@@ -66,6 +67,7 @@ process.configurationMetadata = cms.untracked.PSet(
 )
 
 # Output definition
+os.system("mkdir -p %s" %(settingsD["path"]["step1_output"].value()))
 
 process.FEVTDEBUGoutput = cms.OutputModule(
     "PoolOutputModule",
