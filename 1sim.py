@@ -67,7 +67,7 @@ process.configurationMetadata = cms.untracked.PSet(
 )
 
 # Output definition
-os.system("mkdir -p %s" %(settingsD["path"]["step1_output"].value()))
+os.system("mkdir -p %s" % (settingsD["path"]["step1_output"].value()))
 
 process.FEVTDEBUGoutput = cms.OutputModule(
     "PoolOutputModule",

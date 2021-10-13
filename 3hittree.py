@@ -85,7 +85,10 @@ ed_analyzer_kwargs = {
     # "label_HGCHEFRecHit": cms.InputTag("HGCalRecHit", "HGCHEFRecHits"),
     # "label_HGCHEBRecHit": cms.InputTag("HGCalRecHit", "HGCHEBRecHits"),
 }
-process.treeMaker = cms.EDAnalyzer("TreeMaker", **ed_analyzer_kwargs)
+process.treeMaker = cms.EDAnalyzer(
+    "TreeMaker",
+    **ed_analyzer_kwargs,
+)
 
 ## Apply filters to the generated particeles
 process = apply_filters(process, settingsD)

@@ -97,7 +97,7 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Output definition
 # Output definition
-os.system("mkdir -p %s" %(settingsD["path"]["step2_output"].value()))
+os.system("mkdir -p %s" % (settingsD["path"]["step2_output"].value()))
 
 process.FEVTDEBUGHLToutput = cms.OutputModule(
     "PoolOutputModule",
@@ -118,17 +118,24 @@ process.FEVTDEBUGHLToutput = cms.OutputModule(
 # Additional output definition
 
 # Other statements
-from SimCalorimetry.HGCalSimProducers.hgcalDigitizer_cfi import hgceeDigitizer, hgchebackDigitizer, hgchefrontDigitizer, HGCAL_chargeCollectionEfficiencies, HGCAL_ileakParam_toUse, HGCAL_cceParams_toUse
+from SimCalorimetry.HGCalSimProducers.hgcalDigitizer_cfi import (
+    hgceeDigitizer,
+    hgchebackDigitizer,
+    hgchefrontDigitizer,
+    HGCAL_chargeCollectionEfficiencies,
+    HGCAL_ileakParam_toUse,
+    HGCAL_cceParams_toUse,
+)
 from SimGeneral.MixingModule.caloTruthProducer_cfi import *
 
 theDigitizers = cms.PSet(
-    hgceeDigitizer = cms.PSet(hgceeDigitizer),
-    hgchebackDigitizer = cms.PSet(hgchebackDigitizer),
-    hgchefrontDigitizer = cms.PSet(hgchefrontDigitizer),
-    calotruth = cms.PSet(caloParticles),
+    hgceeDigitizer=cms.PSet(hgceeDigitizer),
+    hgchebackDigitizer=cms.PSet(hgchebackDigitizer),
+    hgchefrontDigitizer=cms.PSet(hgchefrontDigitizer),
+    calotruth=cms.PSet(caloParticles),
 )
 
-#process.mix.digitizers = cms.PSet(process.theDigitizersValid)
+# process.mix.digitizers = cms.PSet(process.theDigitizersValid)
 process.mix.digitizers = cms.PSet(cms.PSet(theDigitizers))
 from Configuration.AlCa.GlobalTag import GlobalTag
 
@@ -137,50 +144,52 @@ process.GlobalTag = GlobalTag(process.GlobalTag, "auto:phase2_realistic_T15", ""
 from SimCalorimetry.Configuration.SimCalorimetry_cff import *
 from GeneratorInterface.Core.generatorSmeared_cfi import *
 
-doAllDigiTask = cms.Task(generatorSmeared)#, calDigiTask)
+doAllDigiTask = cms.Task(generatorSmeared)  # , calDigiTask)
 pdigi_valid = cms.Sequence(doAllDigiTask)
 
-#DigiToRawTask = cms.Task(L1TDigiToRawTask, siPixelRawData, SiStripDigiToRaw, ecalPacker, esDigiToRaw, hcalRawDataTask, cscpacker, dtpacker, rpcpacker, ctppsRawData, castorRawData, rawDataCollector)
+# DigiToRawTask = cms.Task(L1TDigiToRawTask, siPixelRawData, SiStripDigiToRaw, ecalPacker, esDigiToRaw, hcalRawDataTask, cscpacker, dtpacker, rpcpacker, ctppsRawData, castorRawData, rawDataCollector)
 
 process.load("Configuration.StandardSequences.RawToDigi_cff")
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 
 from EventFilter.HGCalRawToDigi.HGCalRawToDigi_cfi import *
+
 hgcalRawToDigiTask = cms.Task(hgcalDigis)
 
 from RecoLocalCalo.Configuration.hgcalLocalReco_cff import *
+
 hgcalLocalRecoTask = cms.Task(
     HGCalUncalibRecHit,
     HGCalRecHit,
     hgcalRecHitMapProducer,
-    #hgcalLayerClusters,
-    #hgcalMultiClusters,
+    # hgcalLayerClusters,
+    # hgcalMultiClusters,
     particleFlowRecHitHGC,
-    #particleFlowClusterHGCal
+    # particleFlowClusterHGCal
 )
 
 # Path and EndPath definitions
 process.digitisation_step = cms.Path(pdigi_valid)
-#process.L1TrackTrigger_step = cms.Path(process.L1TrackTrigger)
-#process.pL1TkPrimaryVertex = cms.Path(process.L1TkPrimaryVertex)
-#process.pL1TkPhotonsCrystal = cms.Path(process.L1TkPhotonsCrystal)
-#process.pL1TkIsoElectronsCrystal = cms.Path(process.L1TkIsoElectronsCrystal)
-#process.pL1TkElectronsLooseCrystal = cms.Path(process.L1TkElectronsLooseCrystal)
-#process.pL1TkElectronsHGC = cms.Path(process.L1TkElectronsHGC)
-#process.pL1TkMuon = cms.Path(process.L1TkMuons + process.L1TkMuonsTP)
-#process.pL1TkElectronsLooseHGC = cms.Path(process.L1TkElectronsLooseHGC)
-#process.pL1TkElectronsEllipticMatchHGC = cms.Path(process.L1TkElectronsEllipticMatchHGC)
-#process.pL1TkElectronsCrystal = cms.Path(process.L1TkElectronsCrystal)
-#process.pL1TkPhotonsHGC = cms.Path(process.L1TkPhotonsHGC)
-#process.pL1TkIsoElectronsHGC = cms.Path(process.L1TkIsoElectronsHGC)
-#process.pL1TkElectronsEllipticMatchCrystal = cms.Path(
+# process.L1TrackTrigger_step = cms.Path(process.L1TrackTrigger)
+# process.pL1TkPrimaryVertex = cms.Path(process.L1TkPrimaryVertex)
+# process.pL1TkPhotonsCrystal = cms.Path(process.L1TkPhotonsCrystal)
+# process.pL1TkIsoElectronsCrystal = cms.Path(process.L1TkIsoElectronsCrystal)
+# process.pL1TkElectronsLooseCrystal = cms.Path(process.L1TkElectronsLooseCrystal)
+# process.pL1TkElectronsHGC = cms.Path(process.L1TkElectronsHGC)
+# process.pL1TkMuon = cms.Path(process.L1TkMuons + process.L1TkMuonsTP)
+# process.pL1TkElectronsLooseHGC = cms.Path(process.L1TkElectronsLooseHGC)
+# process.pL1TkElectronsEllipticMatchHGC = cms.Path(process.L1TkElectronsEllipticMatchHGC)
+# process.pL1TkElectronsCrystal = cms.Path(process.L1TkElectronsCrystal)
+# process.pL1TkPhotonsHGC = cms.Path(process.L1TkPhotonsHGC)
+# process.pL1TkIsoElectronsHGC = cms.Path(process.L1TkIsoElectronsHGC)
+# process.pL1TkElectronsEllipticMatchCrystal = cms.Path(
 #    process.L1TkElectronsEllipticMatchCrystal
-#)
-#process.L1simulation_step = cms.Path(process.SimL1Emulator)
+# )
+# process.L1simulation_step = cms.Path(process.SimL1Emulator)
 process.digi2raw_step = cms.Path(process.DigiToRaw)
-#process.raw2digi_step = cms.Path(process.RawToDigi)
+# process.raw2digi_step = cms.Path(process.RawToDigi)
 process.raw2digi_step = cms.Path(cms.Sequence(hgcalRawToDigiTask))
-#process.reconstruction_step = cms.Path(process.reconstruction)
+# process.reconstruction_step = cms.Path(process.reconstruction)
 process.reconstruction_step = cms.Path(cms.Sequence(hgcalLocalRecoTask))
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
@@ -188,13 +197,13 @@ process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 # Schedule definition
 process.schedule = cms.Schedule(
     process.digitisation_step,
-    #process.L1TrackTrigger_step,
-    #process.L1simulation_step,
-    #process.digi2raw_step,
+    # process.L1TrackTrigger_step,
+    # process.L1simulation_step,
+    # process.digi2raw_step,
     process.raw2digi_step,
     process.reconstruction_step,
 )
-#process.schedule.extend(process.HLTSchedule)
+# process.schedule.extend(process.HLTSchedule)
 process.schedule.extend([process.endjob_step, process.FEVTDEBUGHLToutput_step])
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 
@@ -203,10 +212,10 @@ associatePatAlgosToolsTask(process)
 # customisation of the process.
 
 # Automatic addition of the customisation function from HLTrigger.Configuration.customizeHLTforMC
-#from HLTrigger.Configuration.customizeHLTforMC import customizeHLTforMC
+# from HLTrigger.Configuration.customizeHLTforMC import customizeHLTforMC
 
 # call to customisation function customizeHLTforMC imported from HLTrigger.Configuration.customizeHLTforMC
-#process = customizeHLTforMC(process)
+# process = customizeHLTforMC(process)
 
 from SimCalorimetry.HGCalSimProducers.hgcalDigitizer_cfi import *
 
