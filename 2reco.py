@@ -43,7 +43,7 @@ process.source = cms.Source(
     ),
     inputCommands=cms.untracked.vstring(
         "keep *",
-        "drop *_genParticles_*_*",
+        # "drop *_genParticles_*_*",
         "drop *_genParticlesForJets_*_*",
         "drop *_kt4GenJets_*_*",
         "drop *_kt6GenJets_*_*",

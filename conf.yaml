@@ -1,21 +1,21 @@
 ---
 Gun:
   AddAntiParticle: false
-  MaxE: 500
-  MaxEta: 3
+  MaxE: 500.0
+  MaxEta: 3.0
   MaxPhi: 6.2831853
-  MinE: 10
+  MinE: 10.0
   MinEta: 1.6
-  MinPhi: 0
+  MinPhi: 0.0
   PartID: 11
 debug: false
 debugFile: false
-genEleFilter: 0
-genPartonFilter: 0
+genEleFilter: false
+genPartonFilter: false
 genPhoFilter: false
 gen_particle_pdg_id: 11
 isGunSample: true
-maxEvents: 2
+maxEvents: 6
 memoryCheck: false
 onRaw: false
 path:
