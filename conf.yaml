@@ -1,22 +1,28 @@
+---
 Gun:
   AddAntiParticle: false
-  MaxE: 500.
-  MaxEta: 3.
+  MaxE: 500
+  MaxEta: 3
   MaxPhi: 6.2831853
-  MinE: 10.
+  MinE: 10
   MinEta: 1.6
-  MinPhi: 0.
+  MinPhi: 0
   PartID: 11
-debugFile: 0
+debug: false
+debugFile: false
 genEleFilter: 0
 genPartonFilter: 0
+genPhoFilter: false
 gen_particle_pdg_id: 11
-isGunSample: 1
+isGunSample: true
 maxEvents: 2
-onRaw: 0
+memoryCheck: false
+onRaw: false
 path:
+  hittrees: wd/hittrees
   step1_output: wd/step1
   step2_output: wd/step2
-  step3_output: wd/step3
-storeRecHit: 1
-storeSimHit: 1
+printTime: false
+storeRecHit: true
+storeSimHit: true
+trace: false

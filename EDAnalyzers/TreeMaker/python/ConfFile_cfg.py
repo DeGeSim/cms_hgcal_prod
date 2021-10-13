@@ -1,11 +1,15 @@
 import os
+
 import FWCore.ParameterSet.Config as cms
-
-processName = "Demo"
-
+from Configuration.AlCa.GlobalTag import GlobalTag
 from Configuration.StandardSequences.Eras import eras
 
-process = cms.Process(processName, eras.Phase2C9)
+# from EDAnalyzers.TreeMaker.parseOptions_cff import options
+from EDFilters.MyFilters.ApplyFilters import apply_filters
+from settingsparse import cliargs, settingsD
+from SLHCUpgradeSimulations.Configuration.aging import customise_aging_1000
+
+process = cms.Process("BuildTree", eras.Phase2C9)
 
 # import of standard configurations
 process.load("Configuration.StandardSequences.Services_cff")
@@ -19,7 +23,6 @@ process.load("Configuration.StandardSequences.RecoSim_cff")
 process.load("Configuration.StandardSequences.EndOfProcess_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 
-from Configuration.AlCa.GlobalTag import GlobalTag
 
 process.GlobalTag = GlobalTag(process.GlobalTag, "auto:phase2_realistic_T15", "")
 
@@ -28,77 +31,49 @@ process.load("Configuration.Geometry.GeometryExtended2026D49_cff")
 
 
 ############################## Parse arguments ##############################
-from EDAnalyzers.TreeMaker.parseOptions_cff import options
-
-
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.threshold = "INFO"
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.MessageLogger.categories.append("Demo")
+# process.MessageLogger.categories.append("BuildTree")
 process.MessageLogger.cerr.INFO = cms.untracked.PSet(limit=cms.untracked.int32(-1))
 
 process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(True))
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(options.maxEvents))
+process.maxEvents = cms.untracked.PSet(
+    input=cms.untracked.int32(settingsD["maxEvents"].value())
+)
 
 ############################## File Paths ###################################
 #### Check if inputfile is given, otherwise read filenames from the sourcefile
-fNames = []
-if len(options.inputFiles):
-    fNames = options.inputFiles
-else:
-    with open(options.sourceFile) as f:
-        fNames = f.readlines()
-#### Add file: prefix for local files as required by ROOT
-for iFile, fName in enumerate(fNames):
-    if "file:" not in fName and "root:" not in fName:
-        fNames[iFile] = "file:%s" % (fName)
-
-inputFileNames = cms.untracked.vstring(fNames)
-
-
-def constructOutFilename():
-    outFileSuffix = ""
-    if options.onRaw:
-        outFileSuffix = "%s_onRaw" % (outFileSuffix)
-
-    if options.outFileNumber >= 0:
-        outFileSuffix = "%s_%d" % (outFileSuffix, options.outFileNumber)
-
-    return "ntupleTree%s.root" % (outFileSuffix)
-
-
-outFile = constructOutFilename()
-
-#### Create output folders, prefix path of the output file with the outdir
-if len(options.outputDir):
-    os.system("mkdir -p %s" % (options.outputDir))
-    outFile = "%s/%s" % (options.outputDir, outFile)
-
 
 process.source = cms.Source(
     "PoolSource",
-    fileNames=inputFileNames,
+    fileNames=cms.untracked.vstring(
+        "file:{}/{}.root".format(
+            settingsD["path"]["step2_output"].value(),
+            cliargs.fileid,
+        )
+    ),
     # Run1:Event1 to Run2:Event2
     # eventsToProcess = cms.untracked.VEventRange("1:78722-1:78722"),
     # duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
 )
 
 
-if len(options.eventRange):
-    process.source.eventsToProcess = cms.untracked.VEventRange(options.eventRange)
+# if len(settingsD["eventRange"]):
+#     process.source.eventsToProcess = cms.untracked.VEventRange(settingsD["eventRange"])
 
-if options.depGraph:
-    process.DependencyGraph = cms.Service("DependencyGraph")
-    process.source = cms.Source("EmptySource")
-    process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(0))
+# if settingsD["depGraph"]:
+#     process.DependencyGraph = cms.Service("DependencyGraph")
+#     process.source = cms.Source("EmptySource")
+#     process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(0))
 
 
 ed_analyzer_kwargs = {
     ############################## My stuff ##############################
-    "debug": cms.bool(False),
-    "isGunSample": cms.bool(bool(options.isGunSample)),
-    "storeSimHit": cms.bool(bool(options.storeSimHit)),
-    "storeRecHit": cms.bool(bool(options.storeRecHit)),
+    "debug": settingsD["debug"],
+    "isGunSample": settingsD["isGunSample"],
+    "storeSimHit": settingsD["storeSimHit"],
+    "storeRecHit": settingsD["storeRecHit"],
     ############################## GEN ##############################
     "label_generator": cms.InputTag("generator"),
     "label_genParticle": cms.InputTag("genParticles"),
@@ -113,34 +88,33 @@ ed_analyzer_kwargs = {
 process.treeMaker = cms.EDAnalyzer("TreeMaker", **ed_analyzer_kwargs)
 
 ## Apply filters to the generated particeles
-from EDFilters.MyFilters.ApplyFilters import apply_filters
+process = apply_filters(process, settingsD)
 
-process = apply_filters(process, options)
+
+outFile = "{}/{}.root".format(
+    settingsD["path"]["hittrees"].value(),
+    cliargs.fileid,
+)
 
 # Remove old output file
 if os.path.isfile(outFile):
     os.remove(outFile)
 
-# Output file name modification
-if outFile.startswith("/eos/cms"):
-    outFile = outFile.replace("/eos/cms", "root://eoscms.cern.ch//eos/cms")
-
-
 # Output
-process.TFileService = cms.Service("TFileService", fileName=cms.string(outFile))
+process.TFileService = cms.Service(
+    "TFileService", fileName=cms.string("file:" + outFile)
+)
 
 process.schedule = cms.Schedule()
 
 
 # Aging
-from SLHCUpgradeSimulations.Configuration.aging import customise_aging_1000
 
 customise_aging_1000(process)
 
-
 process.reco_seq = cms.Sequence()
 
-if options.onRaw:
+if settingsD["onRaw"]:
     process.reco_seq = cms.Sequence(
         process.RawToDigi * process.L1Reco * process.reconstruction_mod
     )
@@ -167,19 +141,16 @@ process.p = cms.Path(
 
 process.schedule.insert(0, process.p)
 
-print "\n"
-print "*" * 50
-print "process.schedule:", process.schedule
-print "*" * 50
-print "\n"
-
+print("*" * 50)
+print("process.schedule:", process.schedule)
+print("*" * 50)
 
 # Tracer
-if options.trace:
+if settingsD["trace"]:
     process.Tracer = cms.Service("Tracer")
 
 
-if options.memoryCheck:
+if settingsD["memoryCheck"]:
     process.SimpleMemoryCheck = cms.Service(
         "SimpleMemoryCheck",
         moduleMemorySummary=cms.untracked.bool(True),
@@ -187,7 +158,7 @@ if options.memoryCheck:
 
 
 # Timing
-if options.printTime:
+if settingsD["printTime"]:
     process.Timing = cms.Service(
         "Timing",
         summaryOnly=cms.untracked.bool(False),
@@ -196,7 +167,7 @@ if options.printTime:
 
 
 # Debug
-if options.debugFile:
+if settingsD["debugFile"]:
 
     process.out = cms.OutputModule(
         "PoolOutputModule", fileName=cms.untracked.string("debug.root")

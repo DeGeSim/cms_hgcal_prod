@@ -5,7 +5,7 @@ import FWCore.ParameterSet.Config as cms
 from .GenParticleFilter_cfi import *
 
 
-def apply_filters(process, options):
+def apply_filters(process, settingsD):
     # Gen-ele filter
     process.GenParticleFilter_ele = GenParticleFilter.clone()
     process.GenParticleFilter_ele.atLeastN = cms.int32(1)
@@ -13,12 +13,12 @@ def apply_filters(process, options):
     process.GenParticleFilter_ele.minPt = cms.double(10)
     process.GenParticleFilter_ele.minEta = cms.double(1.479)
     process.GenParticleFilter_ele.maxEta = cms.double(3.1)
-    process.GenParticleFilter_ele.isGunSample = cms.bool(bool(options.isGunSample))
+    process.GenParticleFilter_ele.isGunSample = settingsD["isGunSample"]
     # process.GenParticleFilter_ele.debug = cms.bool(True)
 
     process.filter_seq_genEle = cms.Sequence()
 
-    if options.genEleFilter:
+    if settingsD["genEleFilter"]:
         process.filter_seq_genEle = cms.Sequence(process.GenParticleFilter_ele)
 
     # Gen-pho filter
@@ -28,12 +28,12 @@ def apply_filters(process, options):
     process.GenParticleFilter_pho.minPt = cms.double(10)
     process.GenParticleFilter_pho.minEta = cms.double(1.479)
     process.GenParticleFilter_pho.maxEta = cms.double(3.1)
-    process.GenParticleFilter_pho.isGunSample = cms.bool(bool(options.isGunSample))
+    process.GenParticleFilter_pho.isGunSample = settingsD["isGunSample"]
     # process.GenParticleFilter_pho.debug = cms.bool(True)
 
     process.filter_seq_genPho = cms.Sequence()
 
-    if options.genPhoFilter:
+    if settingsD["genPhoFilter"]:
         process.filter_seq_genPho = cms.Sequence(process.GenParticleFilter_pho)
 
     # Gen-parton filter
@@ -43,11 +43,11 @@ def apply_filters(process, options):
     process.GenParticleFilter_part.minPt = cms.double(10)
     process.GenParticleFilter_part.minEta = cms.double(1.479)
     process.GenParticleFilter_part.maxEta = cms.double(3.1)
-    process.GenParticleFilter_part.isGunSample = cms.bool(bool(options.isGunSample))
+    process.GenParticleFilter_part.isGunSample = settingsD["isGunSample"]
     # process.GenParticleFilter_part.debug = cms.bool(True)
 
     process.filter_seq_genPart = cms.Sequence()
 
-    if options.genPartonFilter:
+    if settingsD["genPartonFilter"]:
         process.filter_seq_genPart = cms.Sequence(process.GenParticleFilter_part)
     return process
