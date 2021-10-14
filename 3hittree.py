@@ -87,7 +87,7 @@ ed_analyzer_kwargs = {
 }
 process.treeMaker = cms.EDAnalyzer(
     "TreeMaker",
-    **ed_analyzer_kwargs,
+    **ed_analyzer_kwargs
 )
 
 ## Apply filters to the generated particeles

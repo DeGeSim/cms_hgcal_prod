@@ -13,9 +13,9 @@ debugFile: false
 genEleFilter: false
 genPartonFilter: false
 genPhoFilter: false
-gen_particle_pdg_id: 11
+gen_particle_pdg_id: 3
 isGunSample: true
-maxEvents: 6
+maxEvents: 10
 memoryCheck: false
 onRaw: false
 path:

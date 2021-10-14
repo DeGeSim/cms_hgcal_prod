@@ -1,0 +1,10 @@
+# Unix submit description file
+# sleep.sub -- simple sleep job
++RequestRuntime = 9600 * 48
+Executable  = fullgeoex.sh
+arguments = $(Process)
+Log         = fullgeoex_log_$(SUBMIT_TIME)_$(Process).txt
+Output      = fullgeoex_out_$(SUBMIT_TIME)_$(Process).txt
+Error       = fullgeoex_error_$(SUBMIT_TIME)_$(Process).txt
+request_cpus = 1
+queue 100
