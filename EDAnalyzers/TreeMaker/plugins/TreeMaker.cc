@@ -345,18 +345,28 @@ void TreeMaker::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
 
   // treeOutput->rho = rho;
   
-  //////Simulated Hits
-  //Declare the SimHit vectors for EE, HEF, HEB
-  edm::Handle<std::vector<PCaloHit> > v_HGCEESimHit;
-  edm::Handle<std::vector<PCaloHit> > v_HGCHEFSimHit;
-  edm::Handle<std::vector<PCaloHit> > v_HGCHEBSimHit;
+  //Declare the vectors for EE, HEF, HEB
+
+  typedef edm::Handle<std::vector<PCaloHit> > SimHitVector;
+  SimHitVector v_HGCEESimHit;
+  SimHitVector v_HGCHEFSimHit;
+  SimHitVector v_HGCHEBSimHit;
+
+  typedef edm::Handle<edm::SortedCollection<HGCRecHit, edm::StrictWeakOrdering<HGCRecHit>>> RecHitVector;
+  RecHitVector v_HGCEERecHit;
+  RecHitVector v_HGCHEFRecHit;
+  RecHitVector v_HGCHEBRecHit;
   //Load them from the tokens
   iEvent.getByToken(tok_HGCEESimHit, v_HGCEESimHit);
   iEvent.getByToken(tok_HGCHEFSimHit, v_HGCHEFSimHit);
   iEvent.getByToken(tok_HGCHEBSimHit, v_HGCHEBSimHit);
 
+  iEvent.getByToken(tok_HGCEERecHit, v_HGCEERecHit);
+  iEvent.getByToken(tok_HGCHEFRecHit, v_HGCHEFRecHit);
+  iEvent.getByToken(tok_HGCHEBRecHit, v_HGCHEBRecHit);
   //'Calnumber' -> List of hits by DetId
   std::map<int, std::vector<DetId>> m_SimHitsByCalo;
+  std::map<int, std::vector<DetId>> m_RecoHitsByCalo;
   //EE = HGCalEE = 8, Electromagnetic Endcap (EE), a tungsten/copper-silicon sampling electromagnetic calorimeter with a depth of about 26 X0 and 1.5λ
   //HEF = HGCalHSi = 9,Forward Hadronic (HEF or FH), a stainless-steel-silicon hadron calorimeter 3.5λ deep
   //HEB HGCalHSc = 10, Backing Hadronic (HEB or BH), a 5λ stainless-steel-scintillator sampling backing calorimeter
@@ -367,99 +377,77 @@ void TreeMaker::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
   m_SimHitsByCalo[9];
   m_SimHitsByCalo[10];
 
-  populateSimHitMaps(v_HGCEESimHit, m_SimHitsByCalo.at(8));
-  populateSimHitMaps(v_HGCHEFSimHit, m_SimHitsByCalo.at(9));
-  populateSimHitMaps(v_HGCHEBSimHit, m_SimHitsByCalo.at(10));
-
-
-  // SimHits
-  for (PCaloHit simHit: *v_HGCEESimHit){
-  // for (int iSimHit = 0; iSimHit < int(v_HGCEESimHit->size()); iSimHit++) {
-    // auto simHit = (*v_HGCEESimHit)[iSimHit];
-
-    int layer = recHitTools.getLayer(simHit.id()) - 1;  // Start from 0
-    treeOutput->v_simHit_layer.push_back(layer);
-
-    int zside = recHitTools.zside(simHit.id());
-    treeOutput->v_simHit_zside.push_back(zside);
-
-    int detector = simHit.id();
-    treeOutput->v_simHit_detector.push_back(detector);
-
-    auto position = recHitTools.getPosition(simHit.id());
-
-    treeOutput->v_simHit_E.push_back(simHit.energy());
-
-    treeOutput->v_simHit_x.push_back(position.x());
-    treeOutput->v_simHit_y.push_back(position.y());
-    treeOutput->v_simHit_z.push_back(position.z());
-
-    treeOutput->v_simHit_eta.push_back(position.eta());
-    treeOutput->v_simHit_phi.push_back(position.phi());
-
-    treeOutput->simHit_n++;
-  }
-  //////Reconstructed Hits
-  //Declare the RecHit vectors for EE, HEF, HEB
-  edm::Handle<edm::SortedCollection<HGCRecHit, edm::StrictWeakOrdering<HGCRecHit>>> v_HGCEERecHit;
-  edm::Handle<edm::SortedCollection<HGCRecHit, edm::StrictWeakOrdering<HGCRecHit>>> v_HGCHEFRecHit;
-  edm::Handle<edm::SortedCollection<HGCRecHit, edm::StrictWeakOrdering<HGCRecHit>>> v_HGCHEBRecHit;
-  //Load them from the tokens
-  iEvent.getByToken(tok_HGCEERecHit, v_HGCEERecHit);
-  iEvent.getByToken(tok_HGCHEFRecHit, v_HGCHEFRecHit);
-  iEvent.getByToken(tok_HGCHEBRecHit, v_HGCHEBRecHit);
-
-  //'Calnumber' -> List of hits by DetId
-  std::map<int, std::vector<DetId>> m_RecoHitsByCalo;
-  //EE = HGCalEE = 8, Electromagnetic Endcap (EE), a tungsten/copper-silicon sampling electromagnetic calorimeter with a depth of about 26 X0 and 1.5λ
-  //HEF = HGCalHSi = 9,Forward Hadronic (HEF or FH), a stainless-steel-silicon hadron calorimeter 3.5λ deep
-  //HEB HGCalHSc = 10, Backing Hadronic (HEB or BH), a 5λ stainless-steel-scintillator sampling backing calorimeter
-  //HGCalTrigger = 11
-
-  //Create instances of the vector
   m_RecoHitsByCalo[8];
   m_RecoHitsByCalo[9];
   m_RecoHitsByCalo[10];
 
+  populateSimHitMaps(v_HGCEESimHit, m_SimHitsByCalo.at(8));
+  populateSimHitMaps(v_HGCHEFSimHit, m_SimHitsByCalo.at(9));
+  populateSimHitMaps(v_HGCHEBSimHit, m_SimHitsByCalo.at(10));
 
-  
   populateRecHitMaps(v_HGCEERecHit, m_RecoHitsByCalo.at(8));
   populateRecHitMaps(v_HGCHEFRecHit, m_RecoHitsByCalo.at(9));
   populateRecHitMaps(v_HGCHEBRecHit, m_RecoHitsByCalo.at(10));
 
+  std::vector<SimHitVector*> SimHitsLists {&v_HGCEESimHit, &v_HGCHEFSimHit,&v_HGCHEBSimHit};
+  std::vector<RecHitVector*> RecHitsLists {&v_HGCEERecHit, &v_HGCHEFRecHit,&v_HGCHEBRecHit};
 
+  for (SimHitVector* simhitslistpointer: SimHitsLists){
+    for (PCaloHit simHit: **simhitslistpointer){
+      int layer = recHitTools.getLayer(simHit.id()) - 1;  // Start from 0
+      treeOutput->v_simHit_layer.push_back(layer);
+
+      int zside = recHitTools.zside(simHit.id());
+      treeOutput->v_simHit_zside.push_back(zside);
+
+      int detector = simHit.id();
+      treeOutput->v_simHit_detector.push_back(detector);
+
+      auto position = recHitTools.getPosition(simHit.id());
+
+      treeOutput->v_simHit_E.push_back(simHit.energy());
+
+      treeOutput->v_simHit_x.push_back(position.x());
+      treeOutput->v_simHit_y.push_back(position.y());
+      treeOutput->v_simHit_z.push_back(position.z());
+
+      treeOutput->v_simHit_eta.push_back(position.eta());
+      treeOutput->v_simHit_phi.push_back(position.phi());
+
+      treeOutput->simHit_n++;
+    }
+  }
   // RecHits
-  for (HGCRecHit recHit: (*v_HGCEERecHit)){
-  // for (int iRecHit = 0; iRecHit < int(v_HGCEERecHit->size()); iRecHit++) {
-    // auto recHit = (*v_HGCEERecHit)[iRecHit];
+  for (RecHitVector* rechitslistpointer: RecHitsLists){
+    for (HGCRecHit recHit: (**rechitslistpointer)){
+      int layer = recHitTools.getLayer(recHit.id()) - 1;  // Start from 0
+      treeOutput->v_recHit_layer.push_back(layer);
 
-    int layer = recHitTools.getLayer(recHit.id()) - 1;  // Start from 0
-    treeOutput->v_recHit_layer.push_back(layer);
+      int zside = recHitTools.zside(recHit.id());
+      treeOutput->v_recHit_zside.push_back(zside);
 
-    int zside = recHitTools.zside(recHit.id());
-    treeOutput->v_recHit_zside.push_back(zside);
+      int detector = recHit.id().det();
+      treeOutput->v_recHit_detector.push_back(detector);
 
-    int detector = recHit.id().det();
-    treeOutput->v_recHit_detector.push_back(detector);
+      auto position = recHitTools.getPosition(recHit.id());
 
-    auto position = recHitTools.getPosition(recHit.id());
+      treeOutput->v_recHit_E.push_back(recHit.energy());
 
-    treeOutput->v_recHit_E.push_back(recHit.energy());
+      treeOutput->v_recHit_x.push_back(position.x());
+      treeOutput->v_recHit_y.push_back(position.y());
+      treeOutput->v_recHit_z.push_back(position.z());
 
-    treeOutput->v_recHit_x.push_back(position.x());
-    treeOutput->v_recHit_y.push_back(position.y());
-    treeOutput->v_recHit_z.push_back(position.z());
+      treeOutput->v_recHit_eta.push_back(position.eta());
+      treeOutput->v_recHit_phi.push_back(position.phi());
 
-    treeOutput->v_recHit_eta.push_back(position.eta());
-    treeOutput->v_recHit_phi.push_back(position.phi());
-
-    treeOutput->recHit_n++;
+      treeOutput->recHit_n++;
+    }
   }
 
   // Fill tree
   treeOutput->fill();
 
-  printf("\n\n");
+  printf("\n");
   fflush(stdout);
   fflush(stderr);
 }
