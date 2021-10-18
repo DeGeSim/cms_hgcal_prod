@@ -19,7 +19,7 @@
 
 namespace Constants
 {
-    const int HGCalEE_nLayer = 28;
+    // const int HGCalEE_nLayer = 28;
     
     const double _defaultVal_pos1 = 999;
     

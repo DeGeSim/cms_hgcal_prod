@@ -29,25 +29,16 @@ namespace TreeOutputInfo {
     ULong64_t luminosityNumber;
     ULong64_t bunchCrossingNumber;
 
-    // Gen electron //
-    int genEl_n;
-    std::vector<float> v_genEl_E;
-    std::vector<float> v_genEl_px;
-    std::vector<float> v_genEl_py;
-    std::vector<float> v_genEl_pz;
-    std::vector<float> v_genEl_pT;
-    std::vector<float> v_genEl_eta;
-    std::vector<float> v_genEl_phi;
-
-    // Gen photon //
-    int genPh_n;
-    std::vector<float> v_genPh_E;
-    std::vector<float> v_genPh_px;
-    std::vector<float> v_genPh_py;
-    std::vector<float> v_genPh_pz;
-    std::vector<float> v_genPh_pT;
-    std::vector<float> v_genPh_eta;
-    std::vector<float> v_genPh_phi;
+    // Gen Particle //
+    int genPart_n;
+    std::vector<float> v_genPart_E;
+    std::vector<float> v_genPart_px;
+    std::vector<float> v_genPart_py;
+    std::vector<float> v_genPart_pz;
+    std::vector<float> v_genPart_pT;
+    std::vector<float> v_genPart_eta;
+    std::vector<float> v_genPart_phi;
+    std::vector<int> v_genPart_pdgId;
 
     // Pileup //
     int pileup_n;
@@ -91,16 +82,6 @@ namespace TreeOutputInfo {
 
     std::vector<float> v_recHit_SiThickness;
 
-    float caloParticle_n;
-    std::vector<float> v_caloParticle_E;
-    std::vector<float> v_caloParticle_px;
-    std::vector<float> v_caloParticle_py;
-    std::vector<float> v_caloParticle_pz;
-    std::vector<float> v_caloParticle_pT;
-    std::vector<float> v_caloParticle_eta;
-    std::vector<float> v_caloParticle_phi;
-    std::vector<float> v_caloParticle_pdgid;
-
     char name[500];
 
     TreeOutput(std::string details, edm::Service<TFileService> fs) {
@@ -116,55 +97,30 @@ namespace TreeOutputInfo {
       tree->Branch("luminosityNumber", &luminosityNumber);
       tree->Branch("bunchCrossingNumber", &bunchCrossingNumber);
 
-      // Gen electron //
-      sprintf(name, "genEl_n");
-      tree->Branch(name, &genEl_n);
+      // Gen Particle //
+      sprintf(name, "genPart_n");
+      tree->Branch(name, &genPart_n);
 
-      sprintf(name, "genEl_E");
-      tree->Branch(name, &v_genEl_E);
+      sprintf(name, "genPart_E");
+      tree->Branch(name, &v_genPart_E);
 
-      sprintf(name, "genEl_px");
-      tree->Branch(name, &v_genEl_px);
+      sprintf(name, "genPart_px");
+      tree->Branch(name, &v_genPart_px);
 
-      sprintf(name, "genEl_py");
-      tree->Branch(name, &v_genEl_py);
+      sprintf(name, "genPart_py");
+      tree->Branch(name, &v_genPart_py);
 
-      sprintf(name, "genEl_pz");
-      tree->Branch(name, &v_genEl_pz);
+      sprintf(name, "genPart_pz");
+      tree->Branch(name, &v_genPart_pz);
 
-      sprintf(name, "genEl_pT");
-      tree->Branch(name, &v_genEl_pT);
+      sprintf(name, "genPart_pT");
+      tree->Branch(name, &v_genPart_pT);
 
-      sprintf(name, "genEl_eta");
-      tree->Branch(name, &v_genEl_eta);
+      sprintf(name, "genPart_eta");
+      tree->Branch(name, &v_genPart_eta);
 
-      sprintf(name, "genEl_phi");
-      tree->Branch(name, &v_genEl_phi);
-
-      // Gen photon //
-      sprintf(name, "genPh_n");
-      tree->Branch(name, &genPh_n);
-
-      sprintf(name, "genPh_E");
-      tree->Branch(name, &v_genPh_E);
-
-      sprintf(name, "genPh_px");
-      tree->Branch(name, &v_genPh_px);
-
-      sprintf(name, "genPh_py");
-      tree->Branch(name, &v_genPh_py);
-
-      sprintf(name, "genPh_pz");
-      tree->Branch(name, &v_genPh_pz);
-
-      sprintf(name, "genPh_pT");
-      tree->Branch(name, &v_genPh_pT);
-
-      sprintf(name, "genPh_eta");
-      tree->Branch(name, &v_genPh_eta);
-
-      sprintf(name, "genPh_phi");
-      tree->Branch(name, &v_genPh_phi);
+      sprintf(name, "genPart_phi");
+      tree->Branch(name, &v_genPart_phi);
 
       // Pileup //
       sprintf(name, "pileup_n");
@@ -247,79 +203,21 @@ namespace TreeOutputInfo {
 
       sprintf(name, "recHit_detector");
       tree->Branch(name, &v_recHit_detector);
-
-      // sprintf(name, "recHit_matchedSimHitIndex");
-      // tree->Branch(name, &v_recHit_matchedSimHitIndex);
-
-      // sprintf(name, "recHit_matchedSimClusIndex");
-      // tree->Branch(name, &v_recHit_matchedSimClusIndex);
-
-      // sprintf(name, "recHit_isCaloParticleMatched");
-      // tree->Branch(name, &v_recHit_isCaloParticleMatched);
-
-      // sprintf(name, "recHit_iType");
-      // tree->Branch(name, &v_recHit_iType);
-
-      // sprintf(name, "recHit_iCell1");
-      // tree->Branch(name, &v_recHit_iCell1);
-
-      // sprintf(name, "recHit_iCell2");
-      // tree->Branch(name, &v_recHit_iCell2);
-
-      // sprintf(name, "recHit_SiThickness");
-      // tree->Branch(name, &v_recHit_SiThickness);
-
-      // // Calo-particle //
-      // sprintf(name, "caloParticle_n");
-      // tree->Branch(name, &caloParticle_n);
-
-      // sprintf(name, "caloParticle_E");
-      // tree->Branch(name, &v_caloParticle_E);
-
-      // sprintf(name, "caloParticle_px");
-      // tree->Branch(name, &v_caloParticle_px);
-
-      // sprintf(name, "caloParticle_py");
-      // tree->Branch(name, &v_caloParticle_py);
-
-      // sprintf(name, "caloParticle_pz");
-      // tree->Branch(name, &v_caloParticle_pz);
-
-      // sprintf(name, "caloParticle_pT");
-      // tree->Branch(name, &v_caloParticle_pT);
-
-      // sprintf(name, "caloParticle_eta");
-      // tree->Branch(name, &v_caloParticle_eta);
-
-      // sprintf(name, "caloParticle_phi");
-      // tree->Branch(name, &v_caloParticle_phi);
-
-      // sprintf(name, "caloParticle_pdgid");
-      // tree->Branch(name, &v_caloParticle_pdgid);
     }
 
     void fill() { tree->Fill(); }
 
     void clear() {
-      // Gen electron //
-      genEl_n = 0;
-      v_genEl_E.clear();
-      v_genEl_px.clear();
-      v_genEl_py.clear();
-      v_genEl_pz.clear();
-      v_genEl_pT.clear();
-      v_genEl_eta.clear();
-      v_genEl_phi.clear();
-
-      // Gen photon //
-      genPh_n = 0;
-      v_genPh_E.clear();
-      v_genPh_px.clear();
-      v_genPh_py.clear();
-      v_genPh_pz.clear();
-      v_genPh_pT.clear();
-      v_genPh_eta.clear();
-      v_genPh_phi.clear();
+      // Gen Particle //
+      genPart_n = 0;
+      v_genPart_E.clear();
+      v_genPart_px.clear();
+      v_genPart_py.clear();
+      v_genPart_pz.clear();
+      v_genPart_pT.clear();
+      v_genPart_eta.clear();
+      v_genPart_phi.clear();
+      v_genPart_pdgId.clear();
 
       // Pileup //
       pileup_n = 0;
@@ -361,17 +259,6 @@ namespace TreeOutputInfo {
       v_recHit_detector.clear();
 
       v_recHit_SiThickness.clear();
-
-      // Calo-particle
-      caloParticle_n = 0;
-      v_caloParticle_E.clear();
-      v_caloParticle_px.clear();
-      v_caloParticle_py.clear();
-      v_caloParticle_pz.clear();
-      v_caloParticle_pT.clear();
-      v_caloParticle_eta.clear();
-      v_caloParticle_phi.clear();
-      v_caloParticle_pdgid.clear();
     }
   };
 }  // namespace TreeOutputInfo

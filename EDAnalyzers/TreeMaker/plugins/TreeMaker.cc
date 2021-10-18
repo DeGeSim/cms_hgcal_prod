@@ -113,7 +113,6 @@ private:
   TreeOutputInfo::TreeOutput *treeOutput;
   // My stuff //
   void WriteParticleKinematicsToTree(reco::GenParticle &part,
-                                     std::vector<CLHEP::HepLorentzVector> &,
                                      std::vector<CLHEP::HepLorentzVector> &);
   // void populateRecHitMaps(edm::Handle<edm::SortedCollection<HGCRecHit, edm::StrictWeakOrdering<HGCRecHit>>> &v_hits,
                           // std::vector<DetId> &v_caloHitId);
@@ -207,8 +206,7 @@ TreeMaker::~TreeMaker() {
 // member functions
 //
 void TreeMaker::WriteParticleKinematicsToTree(reco::GenParticle &part,
-                                              std::vector<CLHEP::HepLorentzVector> &v_genEl_4mom,
-                                              std::vector<CLHEP::HepLorentzVector> &v_genPh_4mom) {
+                                              std::vector<CLHEP::HepLorentzVector> &v_genPart_4mom) {
   int pdgId = part.pdgId();
   int status = part.status();
 
@@ -237,7 +235,7 @@ void TreeMaker::WriteParticleKinematicsToTree(reco::GenParticle &part,
          part.eta(),
          part.pz());
 
-  std::vector<CLHEP::HepLorentzVector> &v_gen_4mom_ref = (abs(pdgId) == 11) ? v_genEl_4mom : v_genPh_4mom;
+  std::vector<CLHEP::HepLorentzVector> &v_gen_4mom_ref = v_genPart_4mom;
 
   CLHEP::HepLorentzVector gen_4mom;
   gen_4mom.setT(part.energy());
@@ -246,29 +244,19 @@ void TreeMaker::WriteParticleKinematicsToTree(reco::GenParticle &part,
   gen_4mom.setZ(part.pz());
 
   v_gen_4mom_ref.push_back(gen_4mom);
+  treeOutput->v_genPart_pdgId.push_back(pdgId);
 
   //Attach the properties of the patricle to the relevant vector in the tree.
-  if ((pdgId == 11)) {
-    treeOutput->v_genEl_E.push_back(gen_4mom.e());
-    treeOutput->v_genEl_px.push_back(gen_4mom.px());
-    treeOutput->v_genEl_py.push_back(gen_4mom.py());
-    treeOutput->v_genEl_pz.push_back(gen_4mom.pz());
-    treeOutput->v_genEl_pT.push_back(gen_4mom.perp());
-    treeOutput->v_genEl_eta.push_back(gen_4mom.eta());
-    treeOutput->v_genEl_phi.push_back(gen_4mom.phi());
+  // if ((pdgId == 11)) {
+  treeOutput->v_genPart_E.push_back(gen_4mom.e());
+  treeOutput->v_genPart_px.push_back(gen_4mom.px());
+  treeOutput->v_genPart_py.push_back(gen_4mom.py());
+  treeOutput->v_genPart_pz.push_back(gen_4mom.pz());
+  treeOutput->v_genPart_pT.push_back(gen_4mom.perp());
+  treeOutput->v_genPart_eta.push_back(gen_4mom.eta());
+  treeOutput->v_genPart_phi.push_back(gen_4mom.phi());
+  treeOutput->genPart_n++;
 
-    treeOutput->genEl_n++;
-  } else if (pdgId == 22) {
-    treeOutput->v_genPh_E.push_back(gen_4mom.e());
-    treeOutput->v_genPh_px.push_back(gen_4mom.px());
-    treeOutput->v_genPh_py.push_back(gen_4mom.py());
-    treeOutput->v_genPh_pz.push_back(gen_4mom.pz());
-    treeOutput->v_genPh_pT.push_back(gen_4mom.perp());
-    treeOutput->v_genPh_eta.push_back(gen_4mom.eta());
-    treeOutput->v_genPh_phi.push_back(gen_4mom.phi());
-
-    treeOutput->genPh_n++;
-  }
 }
 
 // void TreeMaker::populateRecHitMaps(
@@ -337,13 +325,12 @@ void TreeMaker::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
   edm::Handle<std::vector<reco::GenParticle>> v_genParticle;
   iEvent.getByToken(tok_genParticle, v_genParticle);
 
-  std::vector<CLHEP::HepLorentzVector> v_genEl_4mom;
-  std::vector<CLHEP::HepLorentzVector> v_genPh_4mom;
+  std::vector<CLHEP::HepLorentzVector> v_genPart_4mom;
 
   // Iterate over the generated Particles, filter for valid ones in the HGCal and write the kinematics to the tree
   for (int iPart = 0; iPart < (int)v_genParticle->size(); iPart++) {
     reco::GenParticle part = v_genParticle->at(iPart);
-    WriteParticleKinematicsToTree(part, v_genEl_4mom, v_genPh_4mom);
+    WriteParticleKinematicsToTree(part, v_genPart_4mom);
   }
 
   // // Pileup
