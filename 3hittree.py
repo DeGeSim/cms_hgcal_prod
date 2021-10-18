@@ -81,9 +81,9 @@ ed_analyzer_kwargs = {
     "label_HGCEESimHit": cms.InputTag("g4SimHits", "HGCHitsEE"),
     "label_HGCHEFSimHit": cms.InputTag("g4SimHits", "HGCHitsHEfront"),
     "label_HGCHEBSimHit": cms.InputTag("g4SimHits", "HGCHitsHEback"),
-    # "label_HGCEERecHit": cms.InputTag("HGCalRecHit", "HGCEERecHits"),
-    # "label_HGCHEFRecHit": cms.InputTag("HGCalRecHit", "HGCHEFRecHits"),
-    # "label_HGCHEBRecHit": cms.InputTag("HGCalRecHit", "HGCHEBRecHits"),
+    "label_HGCEERecHit": cms.InputTag("HGCalRecHit", "HGCEERecHits"),
+    "label_HGCHEFRecHit": cms.InputTag("HGCalRecHit", "HGCHEFRecHits"),
+    "label_HGCHEBRecHit": cms.InputTag("HGCalRecHit", "HGCHEBRecHits"),
 }
 process.treeMaker = cms.EDAnalyzer(
     "TreeMaker",

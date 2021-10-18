@@ -27,7 +27,7 @@ namespace TreeOutputInfo {
     ULong64_t runNumber;
     ULong64_t eventNumber;
     ULong64_t luminosityNumber;
-    ULong64_t bunchCrossingNumber;
+    // ULong64_t bunchCrossingNumber;
 
     // Gen Particle //
     int genPart_n;
@@ -40,11 +40,11 @@ namespace TreeOutputInfo {
     std::vector<float> v_genPart_phi;
     std::vector<int> v_genPart_pdgId;
 
-    // Pileup //
-    int pileup_n;
+    // // Pileup //
+    // int pileup_n;
 
     // Rho //
-    float rho;
+    // float rho;
 
     float simHit_n;
     std::vector<float> v_simHit_E;
@@ -53,11 +53,11 @@ namespace TreeOutputInfo {
     std::vector<float> v_simHit_z;
     std::vector<float> v_simHit_eta;
     std::vector<float> v_simHit_phi;
-    std::vector<float> v_simHit_ET;
+    // std::vector<float> v_simHit_ET;
     std::vector<float> v_simHit_layer;
     std::vector<float> v_simHit_zside;
-    std::vector<float> v_simHit_isCaloParticleMatched;
-    std::vector<float> v_simHit_matchedSimClusIndex;
+    // std::vector<float> v_simHit_isCaloParticleMatched;
+    // std::vector<float> v_simHit_matchedSimClusIndex;
     std::vector<float> v_simHit_detector;
 
     float recHit_n;
@@ -67,14 +67,14 @@ namespace TreeOutputInfo {
     std::vector<float> v_recHit_z;
     std::vector<float> v_recHit_eta;
     std::vector<float> v_recHit_phi;
-    std::vector<float> v_recHit_ET;
+    // std::vector<float> v_recHit_ET;
     std::vector<float> v_recHit_layer;
     std::vector<float> v_recHit_zside;
     std::vector<float> v_recHit_detector;
 
-    std::vector<float> v_recHit_matchedSimHitIndex;
-    std::vector<float> v_recHit_matchedSimClusIndex;
-    std::vector<float> v_recHit_isCaloParticleMatched;
+    // std::vector<float> v_recHit_matchedSimHitIndex;
+    // std::vector<float> v_recHit_matchedSimClusIndex;
+    // std::vector<float> v_recHit_isCaloParticleMatched;
 
     std::vector<float> v_recHit_iType;
     std::vector<float> v_recHit_iCell1;
@@ -95,7 +95,7 @@ namespace TreeOutputInfo {
       tree->Branch("runNumber", &runNumber);
       tree->Branch("eventNumber", &eventNumber);
       tree->Branch("luminosityNumber", &luminosityNumber);
-      tree->Branch("bunchCrossingNumber", &bunchCrossingNumber);
+      // tree->Branch("bunchCrossingNumber", &bunchCrossingNumber);
 
       // Gen Particle //
       sprintf(name, "genPart_n");
@@ -122,13 +122,13 @@ namespace TreeOutputInfo {
       sprintf(name, "genPart_phi");
       tree->Branch(name, &v_genPart_phi);
 
-      // Pileup //
-      sprintf(name, "pileup_n");
-      tree->Branch(name, &pileup_n);
+      // // Pileup //
+      // sprintf(name, "pileup_n");
+      // tree->Branch(name, &pileup_n);
 
-      // Rho //
-      sprintf(name, "rho");
-      tree->Branch(name, &rho);
+      // // Rho //
+      // sprintf(name, "rho");
+      // tree->Branch(name, &rho);
 
       // Sim-hit //
       sprintf(name, "simHit_n");
@@ -152,8 +152,8 @@ namespace TreeOutputInfo {
       sprintf(name, "simHit_phi");
       tree->Branch(name, &v_simHit_phi);
 
-      sprintf(name, "simHit_ET");
-      tree->Branch(name, &v_simHit_ET);
+      // sprintf(name, "simHit_ET");
+      // tree->Branch(name, &v_simHit_ET);
 
       sprintf(name, "simHit_layer");
       tree->Branch(name, &v_simHit_layer);
@@ -161,11 +161,11 @@ namespace TreeOutputInfo {
       sprintf(name, "simHit_zside");
       tree->Branch(name, &v_simHit_zside);
 
-      sprintf(name, "simHit_isCaloParticleMatched");
-      tree->Branch(name, &v_simHit_isCaloParticleMatched);
+      // sprintf(name, "simHit_isCaloParticleMatched");
+      // tree->Branch(name, &v_simHit_isCaloParticleMatched);
 
-      sprintf(name, "simHit_matchedSimClusIndex");
-      tree->Branch(name, &v_simHit_matchedSimClusIndex);
+      // sprintf(name, "simHit_matchedSimClusIndex");
+      // tree->Branch(name, &v_simHit_matchedSimClusIndex);
 
       sprintf(name, "recHit_detector");
       tree->Branch(name, &v_recHit_detector);
@@ -219,11 +219,11 @@ namespace TreeOutputInfo {
       v_genPart_phi.clear();
       v_genPart_pdgId.clear();
 
-      // Pileup //
-      pileup_n = 0;
+      // // Pileup //
+      // pileup_n = 0;
 
-      // Rho //
-      rho = 0;
+      // // Rho //
+      // rho = 0;
 
       // Sim-hit //
       simHit_n = 0;
@@ -233,11 +233,11 @@ namespace TreeOutputInfo {
       v_simHit_z.clear();
       v_simHit_eta.clear();
       v_simHit_phi.clear();
-      v_simHit_ET.clear();
+      // v_simHit_ET.clear();
       v_simHit_layer.clear();
       v_simHit_zside.clear();
-      v_simHit_isCaloParticleMatched.clear();
-      v_simHit_matchedSimClusIndex.clear();
+      // v_simHit_isCaloParticleMatched.clear();
+      // v_simHit_matchedSimClusIndex.clear();
 
       // Rec-hit //
       recHit_n = 0;
@@ -247,12 +247,12 @@ namespace TreeOutputInfo {
       v_recHit_z.clear();
       v_recHit_eta.clear();
       v_recHit_phi.clear();
-      v_recHit_ET.clear();
+      // v_recHit_ET.clear();
       v_recHit_layer.clear();
       v_recHit_zside.clear();
-      v_recHit_matchedSimHitIndex.clear();
-      v_recHit_matchedSimClusIndex.clear();
-      v_recHit_isCaloParticleMatched.clear();
+      // v_recHit_matchedSimHitIndex.clear();
+      // v_recHit_matchedSimClusIndex.clear();
+      // v_recHit_isCaloParticleMatched.clear();
       v_recHit_iType.clear();
       v_recHit_iCell1.clear();
       v_recHit_iCell2.clear();
