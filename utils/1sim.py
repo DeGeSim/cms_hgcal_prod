@@ -3,8 +3,10 @@ from pprint import pprint
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Phase2C9_cff import Phase2C9
-from settingsparse import settingsD, cliargs
+from utils.settingsparse import settingsD, cliargs
 
+from datetime import datetime
+import time
 
 process = cms.Process("SIM", Phase2C9)
 
@@ -15,7 +17,9 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load("Configuration.EventContent.EventContent_cff")
 process.load("SimGeneral.MixingModule.mixNoPU_cfi")
-process.load("Geometry.HGCalCommonData.testGeometryV14_cff")
+#process.load("Geometry.HGCalCommonData.testGeometryV14_cff")
+process.load('Configuration.Geometry.GeometryExtended2026D49Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D49_cff')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Generator_cff")
 process.load("IOMC.EventVertexGenerators.VtxSmearedHLLHC14TeV_cfi")
@@ -93,26 +97,73 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 
 process.GlobalTag = GlobalTag(process.GlobalTag, "auto:phase2_realistic_T15", "")
 
-process.generator = cms.EDProducer(
-    "FlatRandomEGunProducer",
-    PGunParameters=cms.PSet(
-        PartID=cms.vint32(settingsD["Gun"]["PartID"].value()),
-        MinEta=settingsD["Gun"]["MinEta"],
-        MaxEta=settingsD["Gun"]["MaxEta"],
-        MinE=settingsD["Gun"]["MinE"],
-        MaxE=settingsD["Gun"]["MaxE"],
-        MinPhi=settingsD["Gun"]["MinPhi"],
-        MaxPhi=settingsD["Gun"]["MaxPhi"],
+#dt = datetime.now()
+#seed = int(time.mktime(dt.utctimetuple()) * 1000 + dt.microsecond / 1000)
+
+#process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+#    # Include a PSet for each module label that needs a
+#    # random engine.  The name is the module label.
+#    # You must supply a seed or seeds.
+#    # Optionally an engine type can be specified
+#    generator = cms.PSet(
+#        initialSeed = cms.untracked.uint32(cliargs.fileid)
+#    ),
+#)
+
+process.RandomNumberGeneratorService.generator.initialSeed = cms.untracked.uint32(cliargs.fileid)
+
+
+#process.generator = cms.EDProducer(
+#    "FlatRandomEGunProducer",
+#    PGunParameters=cms.PSet(
+#        PartID=cms.vint32(settingsD["Gun"]["PartID"].value()),
+#        MinEta=settingsD["Gun"]["MinEta"],
+#        MaxEta=settingsD["Gun"]["MaxEta"],
+#        MinE=settingsD["Gun"]["MinE"],
+#        MaxE=settingsD["Gun"]["MaxE"],
+#        MinPhi=settingsD["Gun"]["MinPhi"],
+#        MaxPhi=settingsD["Gun"]["MaxPhi"],
+#    ),
+#    Verbosity=cms.untracked.int32(0),  ## set to 1 (or greater)  for printouts
+#    psethack=cms.string("single gamma E 50"),  # Todo
+#    AddAntiParticle=settingsD["Gun"]["AddAntiParticle"],
+#    firstRun=cms.untracked.uint32(1),
+#)
+process.generator = cms.EDProducer("CloseByParticleGunProducer",
+    AddAntiParticle = settingsD["Gun"]["AddAntiParticle"],
+    PGunParameters = cms.PSet(
+        Delta = cms.double(100),
+        EnMax = settingsD["Gun"]["MaxE"],
+        EnMin = settingsD["Gun"]["MinE"],
+        MaxEta = settingsD["Gun"]["MaxEta"],
+        MinEta = settingsD["Gun"]["MinEta"],
+        MaxEnSpread = cms.bool(False),
+        MaxPhi = settingsD["Gun"]["MaxPhi"],
+        MinPhi = settingsD["Gun"]["MinPhi"],
+        NParticles = cms.int32(1),
+        Overlapping = cms.bool(False),
+        PartID = cms.vint32(settingsD["Gun"]["PartID"].value()),
+        Pointing = cms.bool(True),
+        RandomShoot = cms.bool(False),
+        RMax = cms.double(127),
+        RMin = cms.double(41),
+        ControlledByEta = cms.bool(True),
+        ZMax = cms.double(321),
+        ZMin = cms.double(320)
     ),
-    Verbosity=cms.untracked.int32(0),  ## set to 1 (or greater)  for printouts
-    psethack=cms.string("single gamma E 50"),  # Todo
-    AddAntiParticle=settingsD["Gun"]["AddAntiParticle"],
-    firstRun=cms.untracked.uint32(1),
+    Verbosity = cms.untracked.int32(0),
+    firstRun = cms.untracked.uint32(1),
+    psethack = cms.string('random particles in phi and r windows')
 )
 
-from SimCalorimetry.HGCalSimProducers.hgcalDigitizer_cfi import *
 
+
+from SimCalorimetry.HGCalSimProducers.hgcalDigitizer_cfi import *
 process = HGCal_disableNoise(process)
+
+#Following Removes Mag Field
+process.g4SimHits.UseMagneticField = False
+process.g4SimHits.Physics.bField = cms.double(0.0)
 
 process.ProductionFilterSequence = cms.Sequence(process.generator)
 

@@ -1,0 +1,28 @@
+---
+Gun:
+  AddAntiParticle: false
+  MinE: 10.0
+  MaxE: 300.0
+  MinEta: 1.7
+  MaxEta: 2.8
+  MinPhi: 0.0
+  MaxPhi: 6.283185
+  PartID: 22
+debug: false
+debugFile: false
+genEleFilter: false
+genPartonFilter: false
+genPhoFilter: false
+gen_particle_pdg_id: 3
+isGunSample: true
+maxEvents: 500
+memoryCheck: false
+onRaw: false
+path:
+  hittrees: /nfs/dust/cms/user/sobhatta/work/HGCal_GAN/hgcal_prod/output_photon-gun/hittrees
+  step1_output: /nfs/dust/cms/user/sobhatta/work/HGCal_GAN/hgcal_prod/output_photon-gun/step1
+  step2_output: /nfs/dust/cms/user/sobhatta/work/HGCal_GAN/hgcal_prod/output_photon-gun/step2
+printTime: false
+storeRecHit: true
+storeSimHit: true
+trace: false

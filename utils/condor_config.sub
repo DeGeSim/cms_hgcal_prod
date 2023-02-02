@@ -1,0 +1,31 @@
+universe = vanilla
+
+executable = @exe@
+
+log = @log@
+output = @out@
+error = @err@
+
+#transfer_input_files = condor_script.sh
+should_transfer_files = IF_NEEDED
+
+when_to_transfer_output = ON_EXIT
+
+getenv = True
+
+# Send the job to Held state on failure. 
+#on_exit_hold = (ExitBySignal == True) || (ExitCode != 0)
+
+max_retries = 5
+
+# In MB, GB, etc.
+#request_disk = 10GB
+request_memory = 6GB
+
+# In seconds
++RequestRuntime = 172800
+
+# High priority Condor
+#+AccountingGroup = "group_u_CMS.u_zh.priority"
+
+queue

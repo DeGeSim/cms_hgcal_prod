@@ -6,7 +6,7 @@ from Configuration.StandardSequences.Eras import eras
 
 # from EDAnalyzers.TreeMaker.parseOptions_cff import options
 from EDFilters.MyFilters.ApplyFilters import apply_filters
-from settingsparse import cliargs, settingsD
+from utils.settingsparse import cliargs, settingsD
 from SLHCUpgradeSimulations.Configuration.aging import customise_aging_1000
 
 process = cms.Process("BuildTree", eras.Phase2C9)
@@ -26,8 +26,9 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 
 process.GlobalTag = GlobalTag(process.GlobalTag, "auto:phase2_realistic_T15", "")
 
-process.load("Configuration.Geometry.GeometryExtended2026D49Reco_cff")
-process.load("Configuration.Geometry.GeometryExtended2026D49_cff")
+#process.load("Configuration.Geometry.GeometryExtended2026D49Reco_cff")
+#process.load("Configuration.Geometry.GeometryExtended2026D49_cff")
+process.load("Geometry.HGCalCommonData.testGeometryV14_cff")
 
 
 ############################## Parse arguments ##############################
@@ -93,6 +94,7 @@ process.treeMaker = cms.EDAnalyzer(
 ## Apply filters to the generated particeles
 process = apply_filters(process, settingsD)
 
+os.system("mkdir -p %s" % (settingsD["path"]["hittrees"].value()))
 
 outFile = "{}/{}.root".format(
     settingsD["path"]["hittrees"].value(),

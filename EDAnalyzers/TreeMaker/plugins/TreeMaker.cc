@@ -85,10 +85,10 @@
 double HGCal_minEta = 1.479;
 double HGCal_maxEta = 3.1;
 
-double el_minPt = 10;     //15;
+double el_minPt = 0;     //15;
 double el_maxPt = 99999;  //30;
 
-double ph_minPt = 10;     //15;
+double ph_minPt = 0;     //15;
 double ph_maxPt = 99999;  //30;
 
 double _largeVal = 999999999;
@@ -214,7 +214,7 @@ void TreeMaker::WriteParticleKinematicsToTree(reco::GenParticle &part,
   bool validHardPh = abs(pdgId) == 22 && ((isGunSample && status == 1) || (!isGunSample && part.isHardProcess()));
   bool validPromtPh = abs(pdgId) == 22 && Common::isPromptPhoton(part);
   if (!(validHardEl || validHardPh || validPromtPh)) {
-    return;
+    //return;
   }
 
   double &maxPt = (abs(pdgId) == 11) ? el_maxPt : ph_maxPt;
@@ -400,8 +400,11 @@ void TreeMaker::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
       int zside = recHitTools.zside(simHit.id());
       treeOutput->v_simHit_zside.push_back(zside);
 
-      int detector = simHit.id();
+      uint32_t rawDetId = simHit.id();
+      DetId detId(rawDetId);
+      int detector = detId.det();
       treeOutput->v_simHit_detector.push_back(detector);
+      treeOutput->v_simHit_detId.push_back(rawDetId);
 
       auto position = recHitTools.getPosition(simHit.id());
 
@@ -426,8 +429,10 @@ void TreeMaker::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
       int zside = recHitTools.zside(recHit.id());
       treeOutput->v_recHit_zside.push_back(zside);
 
-      int detector = recHit.id().det();
+      uint32_t detector = recHit.id().det();
+      int rawDetId = recHit.id().rawId();
       treeOutput->v_recHit_detector.push_back(detector);
+      treeOutput->v_recHit_detId.push_back(rawDetId);
 
       auto position = recHitTools.getPosition(recHit.id());
 
