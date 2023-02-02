@@ -10,13 +10,13 @@ cliargs.register(
     "fileid",
     "1",  # Default value
     VarParsing.VarParsing.multiplicity.singleton,  # singleton or list
-    VarParsing.VarParsing.varType.string,  # string, int, or float
+    VarParsing.VarParsing.varType.int,  # string, int, or float
     "file identification string",  # Description
 )
 
 cliargs.parseArguments()
 
-with open("conf.yaml", "r") as f:
+with open("utils/conf.yaml", "r") as f:
     settingsD = yaml.load(f, Loader=yaml.SafeLoader)
 
 

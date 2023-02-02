@@ -58,6 +58,7 @@ namespace TreeOutputInfo {
     std::vector<float> v_simHit_zside;
     // std::vector<float> v_simHit_isCaloParticleMatched;
     // std::vector<float> v_simHit_matchedSimClusIndex;
+    std::vector<float> v_simHit_detId;
     std::vector<float> v_simHit_detector;
 
     float recHit_n;
@@ -70,6 +71,7 @@ namespace TreeOutputInfo {
     // std::vector<float> v_recHit_ET;
     std::vector<float> v_recHit_layer;
     std::vector<float> v_recHit_zside;
+    std::vector<float> v_recHit_detId;
     std::vector<float> v_recHit_detector;
 
     // std::vector<float> v_recHit_matchedSimHitIndex;
@@ -167,8 +169,11 @@ namespace TreeOutputInfo {
       // sprintf(name, "simHit_matchedSimClusIndex");
       // tree->Branch(name, &v_simHit_matchedSimClusIndex);
 
-      sprintf(name, "recHit_detector");
-      tree->Branch(name, &v_recHit_detector);
+      sprintf(name, "simHit_detector");
+      tree->Branch(name, &v_simHit_detector);
+
+      sprintf(name, "simHit_detId");
+      tree->Branch(name, &v_simHit_detId);
 
       // Rec-hit //
       sprintf(name, "recHit_n");
@@ -203,6 +208,9 @@ namespace TreeOutputInfo {
 
       sprintf(name, "recHit_detector");
       tree->Branch(name, &v_recHit_detector);
+
+      sprintf(name, "recHit_detId");
+      tree->Branch(name, &v_recHit_detId);
     }
 
     void fill() { tree->Fill(); }
@@ -238,6 +246,8 @@ namespace TreeOutputInfo {
       v_simHit_zside.clear();
       // v_simHit_isCaloParticleMatched.clear();
       // v_simHit_matchedSimClusIndex.clear();
+      v_simHit_detector.clear();
+      v_simHit_detId.clear();
 
       // Rec-hit //
       recHit_n = 0;
@@ -257,6 +267,7 @@ namespace TreeOutputInfo {
       v_recHit_iCell1.clear();
       v_recHit_iCell2.clear();
       v_recHit_detector.clear();
+      v_recHit_detId.clear();
 
       v_recHit_SiThickness.clear();
     }

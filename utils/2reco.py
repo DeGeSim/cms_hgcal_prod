@@ -6,7 +6,7 @@
 import os
 import FWCore.ParameterSet.Config as cms
 from Configuration.Eras.Era_Phase2C9_cff import Phase2C9
-from settingsparse import settingsD, cliargs
+from utils.settingsparse import settingsD, cliargs
 
 
 process = cms.Process("HLT", Phase2C9)
@@ -17,7 +17,9 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load("Configuration.EventContent.EventContent_cff")
 process.load("SimGeneral.MixingModule.mixNoPU_cfi")
-process.load("Geometry.HGCalCommonData.testGeometryV14_cff")
+#process.load("Geometry.HGCalCommonData.testGeometryV14_cff")
+process.load('Configuration.Geometry.GeometryExtended2026D49Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D49_cff')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.Digi_cff")
 process.load("Configuration.StandardSequences.L1TrackTrigger_cff")
@@ -44,21 +46,21 @@ process.source = cms.Source(
     inputCommands=cms.untracked.vstring(
         "keep *",
         # "drop *_genParticles_*_*",
-        "drop *_genParticlesForJets_*_*",
-        "drop *_kt4GenJets_*_*",
-        "drop *_kt6GenJets_*_*",
-        "drop *_iterativeCone5GenJets_*_*",
-        "drop *_ak4GenJets_*_*",
-        "drop *_ak7GenJets_*_*",
-        "drop *_ak8GenJets_*_*",
-        "drop *_ak4GenJetsNoNu_*_*",
-        "drop *_ak8GenJetsNoNu_*_*",
-        "drop *_genCandidatesForMET_*_*",
-        "drop *_genParticlesForMETAllVisible_*_*",
-        "drop *_genMetCalo_*_*",
-        "drop *_genMetCaloAndNonPrompt_*_*",
-        "drop *_genMetTrue_*_*",
-        "drop *_genMetIC5GenJs_*_*",
+        #"drop *_genParticlesForJets_*_*",
+        #"drop *_kt4GenJets_*_*",
+        #"drop *_kt6GenJets_*_*",
+        #"drop *_iterativeCone5GenJets_*_*",
+        #"drop *_ak4GenJets_*_*",
+        #"drop *_ak7GenJets_*_*",
+        #"drop *_ak8GenJets_*_*",
+        #"drop *_ak4GenJetsNoNu_*_*",
+        #"drop *_ak8GenJetsNoNu_*_*",
+        #"drop *_genCandidatesForMET_*_*",
+        #"drop *_genParticlesForMETAllVisible_*_*",
+        #"drop *_genMetCalo_*_*",
+        #"drop *_genMetCaloAndNonPrompt_*_*",
+        #"drop *_genMetTrue_*_*",
+        #"drop *_genMetIC5GenJs_*_*",
     ),
     secondaryFileNames=cms.untracked.vstring(),
 )
@@ -99,6 +101,15 @@ process.configurationMetadata = cms.untracked.PSet(
 # Output definition
 os.system("mkdir -p %s" % (settingsD["path"]["step2_output"].value()))
 
+from Configuration.EventContent.EventContent_cff import MINIAODSIMEventContent
+outputCommands = MINIAODSIMEventContent.outputCommands
+outputCommands.extend([
+    "keep *_generator_*_*",
+    "keep *_genParticles_*_*",
+    "keep *_g4SimHits_*_*",
+    "keep *_HGCalRecHit_*_*",
+])
+
 process.FEVTDEBUGHLToutput = cms.OutputModule(
     "PoolOutputModule",
     dataset=cms.untracked.PSet(
@@ -111,119 +122,134 @@ process.FEVTDEBUGHLToutput = cms.OutputModule(
             cliargs.fileid,
         )
     ),
-    outputCommands=process.FEVTDEBUGHLTEventContent.outputCommands,
+    #outputCommands=process.FEVTDEBUGHLTEventContent.outputCommands,
+    outputCommands = outputCommands,
     splitLevel=cms.untracked.int32(0),
 )
 
 # Additional output definition
 
-# Other statements
-from SimCalorimetry.HGCalSimProducers.hgcalDigitizer_cfi import (
-    hgceeDigitizer,
-    hgchebackDigitizer,
-    hgchefrontDigitizer,
-    HGCAL_chargeCollectionEfficiencies,
-    HGCAL_ileakParam_toUse,
-    HGCAL_cceParams_toUse,
-)
-from SimGeneral.MixingModule.caloTruthProducer_cfi import *
+## Other statements
+#from SimCalorimetry.HGCalSimProducers.hgcalDigitizer_cfi import (
+#    hgceeDigitizer,
+#    hgchebackDigitizer,
+#    hgchefrontDigitizer,
+#    HGCAL_chargeCollectionEfficiencies,
+#    HGCAL_ileakParam_toUse,
+#    HGCAL_cceParams_toUse,
+#)
+#from SimGeneral.MixingModule.caloTruthProducer_cfi import *
+#
+#theDigitizers = cms.PSet(
+#    hgceeDigitizer=cms.PSet(hgceeDigitizer),
+#    hgchebackDigitizer=cms.PSet(hgchebackDigitizer),
+#    hgchefrontDigitizer=cms.PSet(hgchefrontDigitizer),
+#    calotruth=cms.PSet(caloParticles),
+#)
+#
+##process.mix.digitizers = cms.PSet(process.theDigitizersValid)
+#process.mix.digitizers = cms.PSet(cms.PSet(theDigitizers))
+#process.mix.mixObjects.mixCH.input = cms.VInputTag(
+#    cms.InputTag("g4SimHits","HGCHitsEE"),
+#    cms.InputTag("g4SimHits","HGCHitsHEfront"),
+#    cms.InputTag("g4SimHits","HGCHitsHEback")
+#)
+#process.mix.mixObjects.mixCH.subdets = cms.vstring(
+#    'HGCHitsEE', 
+#    'HGCHitsHEfront', 
+#    'HGCHitsHEback'
+#)
+#print(process.mix.digitizers)
+#print(process.mix.mixObjects.mixCH.input)
+#print(process.mix.mixObjects.mixCH.subdets)
 
-theDigitizers = cms.PSet(
-    hgceeDigitizer=cms.PSet(hgceeDigitizer),
-    hgchebackDigitizer=cms.PSet(hgchebackDigitizer),
-    hgchefrontDigitizer=cms.PSet(hgchefrontDigitizer),
-    calotruth=cms.PSet(caloParticles),
-)
-
-# process.mix.digitizers = cms.PSet(process.theDigitizersValid)
-process.mix.digitizers = cms.PSet(cms.PSet(theDigitizers))
 from Configuration.AlCa.GlobalTag import GlobalTag
 
 process.GlobalTag = GlobalTag(process.GlobalTag, "auto:phase2_realistic_T15", "")
 
-from SimCalorimetry.Configuration.SimCalorimetry_cff import *
-from GeneratorInterface.Core.generatorSmeared_cfi import *
+#from SimCalorimetry.Configuration.SimCalorimetry_cff import *
+#from GeneratorInterface.Core.generatorSmeared_cfi import *
 
-doAllDigiTask = cms.Task(generatorSmeared)  # , calDigiTask)
-pdigi_valid = cms.Sequence(doAllDigiTask)
+#doAllDigiTask = cms.Task(generatorSmeared)  # , calDigiTask)
+#pdigi_valid = cms.Sequence(doAllDigiTask)
+
+#from EventFilter.RawDataCollector.rawDataCollector_cfi import *
+#from L1Trigger.Configuration.L1TDigiToRaw_cff import *
 
 # DigiToRawTask = cms.Task(L1TDigiToRawTask, siPixelRawData, SiStripDigiToRaw, ecalPacker, esDigiToRaw, hcalRawDataTask, cscpacker, dtpacker, rpcpacker, ctppsRawData, castorRawData, rawDataCollector)
+#DigiToRawTask = cms.Task(L1TDigiToRawTask)#, rawDataCollector)
 
 process.load("Configuration.StandardSequences.RawToDigi_cff")
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 
-from EventFilter.HGCalRawToDigi.HGCalRawToDigi_cfi import *
+#from EventFilter.HGCalRawToDigi.HGCalRawToDigi_cfi import *
+#
+#from Configuration.ProcessModifiers.convertHGCalDigisReco_cff import convertHGCalDigisReco
+#import EventFilter.HGCalRawToDigi.HGCDigiConverter_cfi
+#process.hgcalDigis = EventFilter.HGCalRawToDigi.HGCDigiConverter_cfi.HGCDigiConverter.clone()
+#
+##hgcalRawToDigiTask = cms.Task(hgcalDigis)
+#hgcalRawToDigiTask = cms.Task(process.hgcalDigis)
+#
+#from RecoLocalCalo.Configuration.hgcalLocalReco_cff import *
+#
+#hgcalLocalRecoTask = cms.Task(
+#    HGCalUncalibRecHit,
+#    HGCalRecHit,
+#    hgcalRecHitMapProducer,
+#)
+#
+#from L1Trigger.L1THGCal.hgcalTriggerPrimitives_cff import *
 
-hgcalRawToDigiTask = cms.Task(hgcalDigis)
+process.mix.digitizers = cms.PSet(process.theDigitizersValid)
 
-from RecoLocalCalo.Configuration.hgcalLocalReco_cff import *
+process.load('Configuration.StandardSequences.SimIdeal_cff')
+process.load('Configuration.StandardSequences.RecoSim_cff')
+process.load('Configuration.StandardSequences.L1Reco_cff')
 
-hgcalLocalRecoTask = cms.Task(
-    HGCalUncalibRecHit,
-    HGCalRecHit,
-    hgcalRecHitMapProducer,
-    # hgcalLayerClusters,
-    # hgcalMultiClusters,
-    particleFlowRecHitHGC,
-    # particleFlowClusterHGCal
-)
+#Following Removes Mag Field
+process.g4SimHits.UseMagneticField = False
+process.g4SimHits.Physics.bField = cms.double(0.0)
+
 
 # Path and EndPath definitions
-process.digitisation_step = cms.Path(pdigi_valid)
-# process.L1TrackTrigger_step = cms.Path(process.L1TrackTrigger)
-# process.pL1TkPrimaryVertex = cms.Path(process.L1TkPrimaryVertex)
-# process.pL1TkPhotonsCrystal = cms.Path(process.L1TkPhotonsCrystal)
-# process.pL1TkIsoElectronsCrystal = cms.Path(process.L1TkIsoElectronsCrystal)
-# process.pL1TkElectronsLooseCrystal = cms.Path(process.L1TkElectronsLooseCrystal)
-# process.pL1TkElectronsHGC = cms.Path(process.L1TkElectronsHGC)
-# process.pL1TkMuon = cms.Path(process.L1TkMuons + process.L1TkMuonsTP)
-# process.pL1TkElectronsLooseHGC = cms.Path(process.L1TkElectronsLooseHGC)
-# process.pL1TkElectronsEllipticMatchHGC = cms.Path(process.L1TkElectronsEllipticMatchHGC)
-# process.pL1TkElectronsCrystal = cms.Path(process.L1TkElectronsCrystal)
-# process.pL1TkPhotonsHGC = cms.Path(process.L1TkPhotonsHGC)
-# process.pL1TkIsoElectronsHGC = cms.Path(process.L1TkIsoElectronsHGC)
-# process.pL1TkElectronsEllipticMatchCrystal = cms.Path(
-#    process.L1TkElectronsEllipticMatchCrystal
-# )
-# process.L1simulation_step = cms.Path(process.SimL1Emulator)
+process.digitisation_step = cms.Path(process.pdigi_valid)
+process.L1simulation_step = cms.Path(process.SimL1Emulator)
+process.L1TrackTrigger_step = cms.Path(process.L1TrackTrigger)
 process.digi2raw_step = cms.Path(process.DigiToRaw)
-# process.raw2digi_step = cms.Path(process.RawToDigi)
-process.raw2digi_step = cms.Path(cms.Sequence(hgcalRawToDigiTask))
-# process.reconstruction_step = cms.Path(process.reconstruction)
-process.reconstruction_step = cms.Path(cms.Sequence(hgcalLocalRecoTask))
+process.raw2digi_step = cms.Path(process.RawToDigi)
+process.L1Reco_step = cms.Path(process.L1Reco)
+#process.reconstruction_step = cms.Path(process.localreco)
+process.reconstruction_step = cms.Path(process.reconstruction)
+
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
 # Schedule definition
 process.schedule = cms.Schedule(
-    process.digitisation_step,
-    # process.L1TrackTrigger_step,
-    # process.L1simulation_step,
-    # process.digi2raw_step,
-    process.raw2digi_step,
-    process.reconstruction_step,
+                process.digitisation_step,
+                process.L1simulation_step,
+                process.L1TrackTrigger_step,
+                process.digi2raw_step,
+                process.raw2digi_step,
+                process.L1Reco_step,
+                process.reconstruction_step,
 )
-# process.schedule.extend(process.HLTSchedule)
+
+#process.schedule = cms.Schedule(
+#        process.DigiToRaw,
+#        process.RawToDigi,
+#        process.L1Reco,
+#        process.reconstruction
+#)
+
 process.schedule.extend([process.endjob_step, process.FEVTDEBUGHLToutput_step])
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 
 associatePatAlgosToolsTask(process)
 
-# customisation of the process.
-
-# Automatic addition of the customisation function from HLTrigger.Configuration.customizeHLTforMC
-# from HLTrigger.Configuration.customizeHLTforMC import customizeHLTforMC
-
-# call to customisation function customizeHLTforMC imported from HLTrigger.Configuration.customizeHLTforMC
-# process = customizeHLTforMC(process)
-
 from SimCalorimetry.HGCalSimProducers.hgcalDigitizer_cfi import *
-
 process = HGCal_disableNoise(process)
-
-# End of customisation functions
-
-# Customisation from command line
 
 # Add early deletion of temporary data products to reduce peak memory need
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
