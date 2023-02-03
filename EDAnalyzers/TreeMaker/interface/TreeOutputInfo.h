@@ -58,7 +58,7 @@ namespace TreeOutputInfo {
     std::vector<float> v_simHit_zside;
     // std::vector<float> v_simHit_isCaloParticleMatched;
     // std::vector<float> v_simHit_matchedSimClusIndex;
-    std::vector<float> v_simHit_detId;
+    std::vector<uint32_t> v_simHit_detId;
     std::vector<float> v_simHit_detector;
 
     float recHit_n;
@@ -71,7 +71,7 @@ namespace TreeOutputInfo {
     // std::vector<float> v_recHit_ET;
     std::vector<float> v_recHit_layer;
     std::vector<float> v_recHit_zside;
-    std::vector<float> v_recHit_detId;
+    std::vector<uint32_t> v_recHit_detId;
     std::vector<float> v_recHit_detector;
 
     // std::vector<float> v_recHit_matchedSimHitIndex;
