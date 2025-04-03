@@ -144,7 +144,10 @@ private:
   edm::EDGetTokenT<std::vector<PCaloHit> > tok_HGCHEBSimHit;
 
   // Calo particles //
+  //
   // edm::EDGetTokenT<std::vector<CaloParticle>> tok_caloParticle;
+  edm::ESGetToken<CaloGeometry, CaloGeometryRecord> caloGeomToken_;
+
 };
 
 //
@@ -158,7 +161,9 @@ private:
 //
 // constructors and destructor
 //
-TreeMaker::TreeMaker(const edm::ParameterSet &iConfig) {
+TreeMaker::TreeMaker(const edm::ParameterSet &iConfig) :
+  caloGeomToken_(esConsumes<CaloGeometry, CaloGeometryRecord>())
+{
   usesResource("TFileService");
   edm::Service<TFileService> fs;
 
@@ -184,6 +189,7 @@ TreeMaker::TreeMaker(const edm::ParameterSet &iConfig) {
   // Gen particles //
   tok_genParticle = consumes<std::vector<reco::GenParticle>>(iConfig.getParameter<edm::InputTag>("label_genParticle"));
 
+
   tok_HGCEERecHit = consumes<edm::SortedCollection<HGCRecHit, edm::StrictWeakOrdering<HGCRecHit>>>(iConfig.getParameter<edm::InputTag>("label_HGCEERecHit"));
   tok_HGCHEFRecHit = consumes<edm::SortedCollection<HGCRecHit, edm::StrictWeakOrdering<HGCRecHit>>>(iConfig.getParameter<edm::InputTag>("label_HGCHEFRecHit"));
   tok_HGCHEBRecHit = consumes<edm::SortedCollection<HGCRecHit, edm::StrictWeakOrdering<HGCRecHit>>>(iConfig.getParameter<edm::InputTag>("label_HGCHEBRecHit"));
@@ -193,6 +199,8 @@ TreeMaker::TreeMaker(const edm::ParameterSet &iConfig) {
       iConfig.getParameter<edm::InputTag>("label_HGCHEFSimHit"));
   tok_HGCHEBSimHit = consumes<std::vector<PCaloHit> >(
       iConfig.getParameter<edm::InputTag>("label_HGCHEBSimHit"));
+
+
 }
 
 TreeMaker::~TreeMaker() {
@@ -286,7 +294,8 @@ void TreeMaker::populateSimHitMaps(
   return;
 }
 // ------------ method called for each event  ------------
-void TreeMaker::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup) {
+void TreeMaker::analyze(const edm::Event &iEvent, const edm::EventSetup &es)
+{
   using namespace edm;
 
   long long eventNumber = iEvent.id().event();
@@ -295,9 +304,8 @@ void TreeMaker::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
   treeOutput->clear();
 
   // Load the geometry
-  edm::ESHandle<CaloGeometry> geom;
-  iSetup.get<CaloGeometryRecord>().get(geom);
-  recHitTools.setGeometry(*(geom.product()));
+  const CaloGeometry &geom = es.getData(caloGeomToken_);
+  recHitTools.setGeometry(geom);
 
   //////////////////// Run info ////////////////////
   treeOutput->runNumber = iEvent.id().run();
@@ -306,13 +314,16 @@ void TreeMaker::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
   // treeOutput->bunchCrossingNumber = iEvent.bunchCrossing();
 
   // HGCal Topology
+  /*
   edm::ESHandle<HGCalTopology> handle_topo_HGCalEE;
-  iSetup.get<IdealGeometryRecord>().get("HGCalEESensitive", handle_topo_HGCalEE);
+  //iSetup.get<IdealGeometryRecord>().get("HGCalEESensitive", handle_topo_HGCalEE);
+  iSetup.get("HGCalEESensitive", handle_topo_HGCalEE);
 
   if (!handle_topo_HGCalEE.isValid()) {
     printf("Error: Invalid HGCalEE topology. \n");
     exit(EXIT_FAILURE);
   }
+  */
 
   //////////////////// GenEventInfoProduct ////////////////////
   edm::Handle<GenEventInfoProduct> generatorHandle;
